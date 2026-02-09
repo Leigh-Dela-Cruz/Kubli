@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Encodetext">
+
+    <ImageView
+        android:id="@+id/btnMenuBack"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_menu"
+        app:tint="#8A3FFC"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Encoded Text"
+        android:textColor="#8A3FFC"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@+id/btnMenuBack"
+        app:layout_constraintBottom_toBottomOf="@+id/btnMenuBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/imgLogoTop"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_kubli_logo_purple"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnMenuBack"
+        app:layout_constraintBottom_toBottomOf="@+id/btnMenuBack" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/containerOriginal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="32dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#E5E7EB"
+        app:layout_constraintTop_toBottomOf="@+id/textTitle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your original message"
+                android:textSize="14sp"
+                android:textColor="#1F2937"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_dashed_gray"
+                android:padding="16dp"
+                android:minHeight="100dp">
+
+                <TextView
+                    android:id="@+id/txtOriginalMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="ASHDKJAHDHAHSDHSADASDHASH..."
+                    android:textColor="#BABABA"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/containerEncrypted"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="20dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#E5E7EB"
+        app:layout_constraintTop_toBottomOf="@+id/containerOriginal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Encrypted Text"
+                android:textSize="14sp"
+                android:textColor="#1F2937"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_dashed_gray"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:minHeight="150dp">
+
+                <TextView
+                    android:id="@+id/txtEncryptedMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="This is where the encrypted text should appear"
+                    android:textColor="#1F2937"
+                    android:textSize="14sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCopyText"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="Copy Text"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:backgroundTint="#8A3FFC"
+                app:icon="@drawable/ic_copy"
+                app:iconTint="@color/white"
+                app:iconGravity="textStart"
+                app:cornerRadius="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_horizontal"/>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStartNewTask"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Start new task"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="#8A3FFC"
+        app:icon="@drawable/ic_add_circle"
+        app:iconTint="@color/white"
+        app:iconGravity="textStart"
+        app:cornerRadius="12dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

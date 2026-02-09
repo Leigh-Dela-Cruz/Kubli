@@ -13,9 +13,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.splash_screen)
 
+        // Wait 3 seconds, then go to Choice Screen
         Handler(Looper.getMainLooper()).postDelayed({
-            // UPDATED: Pointing to the renamed LandingActivity
-            val intent = Intent(this, LandingActivity::class.java)
+            val intent = Intent(this, LoginsignupActivity::class.java)
             startActivity(intent)
             finish()
         }, 3000)

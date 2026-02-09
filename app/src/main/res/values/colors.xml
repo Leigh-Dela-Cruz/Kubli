@@ -2,11 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="kubli_purple">#A855F7</color>
 
+    <color name="kubli_purple">#A855F7</color>
     <color name="kubli_light_gray">#E5E7EB</color>
     <color name="kubli_btn_dark">#8A3FFC</color>
-
     <color name="kubli_ripple_light">#E9D5FF</color>
     <color name="kubli_ripple_dark">#7E22CE</color>
     <color name="kubli_btn_shadow">#581C87</color>

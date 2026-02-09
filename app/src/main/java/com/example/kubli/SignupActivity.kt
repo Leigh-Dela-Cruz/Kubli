@@ -2,40 +2,72 @@ package com.example.kubli
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ImageView
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
+import java.security.MessageDigest
 
 class SignupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        // 1. Setup "Sign In" text to Navigate to SigninActivity
+        // Link to Sign In
         val textSignIn = findViewById<TextView>(R.id.textSignIn)
         textSignIn.setOnClickListener {
             val intent = Intent(this, SigninActivity::class.java)
             startActivity(intent)
-
             finish()
         }
 
-        // 2. Setup Social Buttons
-        val btnGoogle = findViewById<ImageView>(R.id.btnGoogle)
-        btnGoogle.setOnClickListener {
-            Toast.makeText(this, "Google Sign Up Clicked", Toast.LENGTH_SHORT).show()
-        }
+        // Create Account Button
+        val btnCreate = findViewById<Button>(R.id.btnCreateAccount)
 
-        val btnApple = findViewById<ImageView>(R.id.btnApple)
-        btnApple.setOnClickListener {
-            Toast.makeText(this, "Apple Sign Up Clicked", Toast.LENGTH_SHORT).show()
-        }
-
-        // 3. Setup Create Account Button
-        val btnCreate = findViewById<android.view.View>(R.id.btnCreateAccount)
         btnCreate.setOnClickListener {
-            Toast.makeText(this, "Creating Account...", Toast.LENGTH_SHORT).show()
+            val nameLayout = findViewById<TextInputLayout>(R.id.inputName)
+            val emailLayout = findViewById<TextInputLayout>(R.id.inputEmail)
+            val passLayout = findViewById<TextInputLayout>(R.id.inputPassword)
+
+            val name = nameLayout.editText?.text.toString().trim()
+            val email = emailLayout.editText?.text.toString().trim()
+            val password = passLayout.editText?.text.toString().trim()
+
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Database Operations
+            lifecycleScope.launch {
+                val db = AppDatabase.getDatabase(applicationContext)
+                val existingUser = db.userDao().getUserByEmail(email)
+
+                if (existingUser != null) {
+                    Toast.makeText(this@SignupActivity, "Email already exists!", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Hash Password & Insert User
+                    val securePassword = hashPassword(password)
+                    val newUser = User(fullName = name, email = email, passwordHash = securePassword)
+                    db.userDao().insertUser(newUser)
+
+                    Toast.makeText(this@SignupActivity, "Account Created!", Toast.LENGTH_SHORT).show()
+
+                    // Redirect to Login with NEW USER flag
+                    val intent = Intent(this@SignupActivity, SigninActivity::class.java)
+                    intent.putExtra("IS_NEW_USER", true) // <--- FLAG ADDED HERE
+                    startActivity(intent)
+                    finish()
+                }
+            }
         }
+    }
+
+    private fun hashPassword(password: String): String {
+        val bytes = MessageDigest.getInstance("SHA-256").digest(password.toByteArray())
+        return bytes.joinToString("") { "%02x".format(it) }
     }
 }

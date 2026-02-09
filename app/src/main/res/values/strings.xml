@@ -1,3 +1,60 @@
 <resources>
     <string name="app_name">Kubli</string>
+
+    <string name="privacy_title">Privacy Policy</string>
+    <string name="privacy_version">v1.0</string>
+    <string name="privacy_date">Effective Date: 23 Feb 2026</string>
+    <string name="privacy_download">Download As PDF</string>
+
+    <string name="policy_intro_english">
+        At Kubli, we value your privacy and are committed to protecting your personal information. This Privacy Policy outlines how we collect, use, and safeguard your data when you use our offline mobile steganography application.
+    </string>
+
+    <string name="policy_body_english">
+        <![CDATA[
+        <b>1. Data Collection</b><br/>
+        Kubli is designed as a completely offline application. We do not collect, store, or transmit your personal images or text messages to external servers. All data processing—including account credentials and message hiding—occurs locally within your device’s internal memory and local storage, ensuring that no sensitive information is ever processed in "plain sight" or accessible to other users.<br/><br/>
+
+        <b>2. Dual-Engine Security</b><br/>
+        Our system utilizes two specialized engines to protect your information. For images, the app modifies the Least Significant Bits (LSB) to hide data mathematically. For text, we utilize a unique Linguistic Steganography engine that generates natural-sounding Filipino and Taglish sentences using Markov Chains and N-gram models. This ensures your hidden data blends seamlessly into local cultural contexts, making it virtually undetectable to outside observers.<br/><br/>
+
+        <b>3. Encryption Policy</b><br/>
+        All messages are processed through a bidirectional Security Core that applies AES-256 encryption before any hiding occurs, ensuring your data remains protected even if the application is closed mid-process. Furthermore, we implement Hamming (7,4) error correction to guarantee system reliability. This allows for the perfect recovery of your original message during the decoding process, even if minor data noise or corruption occurs within the carrier file.<br/><br/>
+
+        <b>4. Third Parties</b><br/>
+        Because Kubli operates entirely without cloud dependencies, we do not sell, trade, or transfer your data to any third parties. Your images and messages never leave your device, protecting them from transit interception or server-side breaches. We maintain total data sovereignty for the user, meaning you are the sole owner and gatekeeper of your encryption keys and steganographic outputs.
+        ]]>
+    </string>
+
+    <string name="ready_title_english">Ready to start?</string>
+    <string name="ready_desc_english">By clicking "Accept", you agree to our full Privacy Policy and Terms of Service.</string>
+    <string name="btn_accept_english">Accept &amp; Use App</string>
+    <string name="btn_decline_english">Review &amp; Decline</string>
+
+
+    <string name="policy_intro_tagalog">
+        Sa Kubli, pinahahalagahan namin ang iyong privacy at nakatuon kami sa pagprotekta ng iyong personal na impormasyon. Ang Privacy Policy na ito ay nagbabalangkas kung paano namin kinokolekta, ginagamit, at pinangangalagaan ang iyong data kapag ginamit mo ang aming offline mobile steganography application.
+    </string>
+
+    <string name="policy_body_tagalog">
+        <![CDATA[
+        <b>1. Koleksyon ng Datos</b><br/>
+        Ang Kubli ay dinisenyo bilang isang ganap na offline na aplikasyon. Hindi kami nangongolekta, nag-iimbak, o nagpapadala ng iyong mga personal na larawan o mensahe sa mga external server. Ang lahat ng pagproseso ng datos—kabilang ang mga detalye ng account at pagtatago ng mensahe—ay nangyayari lamang sa loob ng internal memory at local storage ng iyong device. Tinitiyak nito na walang sensitibong impormasyon ang mapoproseso nang "lantad" o ma-a-access ng ibang mga user.<br/><br/>
+
+        <b>2. Seguridad ng Dual-Engine</b><br/>
+        Gumagamit ang aming sistema ng dalawang espesyal na engine upang protektahan ang iyong impormasyon. Para sa mga larawan, binabago ng app ang Least Significant Bits (LSB) upang itago ang datos gamit ang matematika. Para sa teksto, gumagamit kami ng natatanging Linguistic Steganography engine na bumubuo ng natural na pakinggang mga pangungusap sa Filipino at Taglish gamit ang Markov Chains at N-gram models. Sinisiguro nito na ang iyong nakatagong datos ay humahalo nang maayos sa lokal na konteksto, kaya’t halos hindi ito mapapansin ng mga tagamasid sa labas.<br/><br/>
+
+        <b>3. Patakaran sa Encryption</b><br/>
+        Ang lahat ng mensahe ay dumadaan sa isang bidirectional Security Core na gumagamit ng AES-256 encryption bago pa man ito itago. Sinisiguro nito na mananatiling ligtas ang iyong datos kahit na isara ang aplikasyon habang nagpoproseso. Bukod dito, nagpapatupad kami ng Hamming (7,4) error correction upang garantiyahan ang pagiging maaasahan ng sistema. Pinapayagan nito ang perpektong pagbawi ng iyong orihinal na mensahe sa proseso ng decoding, kahit pa may maliit na noise o sira sa carrier file.<br/><br/>
+
+        <b>4. Mga Ikatlong Partido</b><br/>
+        Dahil ang Kubli ay gumagana nang walang dependency sa cloud o internet, hindi namin ibinebenta, ipinagpapalit, o inililipat ang iyong datos sa anumang ikatlong partido. Ang iyong mga larawan at mensahe ay hindi kailanman lalabas sa iyong device, na nagbibigay-proteksyon mula sa interception habang ipinapadala o mga breach sa server. Pinapanatili namin ang ganap na soberanya ng datos para sa user, na nangangahulugang ikaw lamang ang nagmamay-ari at may hawak ng iyong encryption keys at steganographic outputs.
+        ]]>
+    </string>
+
+    <string name="ready_title_tagalog">Handa ka na ba?</string>
+    <string name="ready_desc_tagalog">Sa pag-click ng "Tanggapin", sumasang-ayon ka sa aming buong Privacy Policy at Mga Tuntunin ng Serbisyo.</string>
+    <string name="btn_accept_tagalog">Tanggapin at Gamitin</string>
+    <string name="btn_decline_tagalog">Suriin at Tanggihan</string>
+
 </resources>

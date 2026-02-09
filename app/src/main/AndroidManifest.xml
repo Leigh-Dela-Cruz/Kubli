@@ -8,6 +8,24 @@
         android:label="@string/app_name"
         android:theme="@style/Base.Theme.Kubli">
         <activity
+            android:name=".Encodetext"
+            android:exported="false" />
+        <activity
+            android:name=".Encodemessage"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PrivacyPolicyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PrivacyCheckActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GettingStartedActivity"
+            android:exported="false" />
+        <activity
             android:name=".SigninActivity"
             android:exported="false" />
         <activity
