@@ -41,10 +41,11 @@ android {
 }
 chaquopy {
     defaultConfig {
-        version = "3.14"
+        version = "3.13"
         buildPython("python")
         pip {
             install("numpy")
+            install("pycryptodome")
         }
     }
 

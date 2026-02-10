@@ -5,11 +5,14 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
+import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
 
 class Encodetext : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +26,11 @@ class Encodetext : AppCompatActivity() {
         val btnCopy = findViewById<MaterialButton>(R.id.btnCopyText)
         val btnStartNew = findViewById<MaterialButton>(R.id.btnStartNewTask)
 
+        if (!Python.isStarted()) {
+            Python.start(AndroidPlatform(this))
+        }
+        val py = Python.getInstance()
+
         //Receive data from previous activity
         // We get the string we sent using the key "ORIGINAL_TEXT"
         val originalMessage = intent.getStringExtra("ORIGINAL_TEXT") ?: ""
@@ -30,10 +38,20 @@ class Encodetext : AppCompatActivity() {
         // Display it in the gray text view
         txtOriginal.text = originalMessage
 
-        // Set placeholder encrypted text
-        //message is a placeholder for backend
-        val placeholderEncryptedText = "This is where the encrypted text should appear"
-        txtEncrypted.text = placeholderEncryptedText
+        val encrypt = py.getModule("encrypt")
+
+        Thread {
+            val result = try {
+                encrypt.callAttr("hide_message_safe", originalMessage).toString()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                "Python call failed, fallback demo output"
+            }
+
+            runOnUiThread {
+                txtEncrypted.text = result
+            }
+        }.start()
 
         // Back Button Logic
         btnBack.setOnClickListener {
