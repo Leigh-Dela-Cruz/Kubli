@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
+    id("com.chaquo.python")
 }
 
 android {
@@ -16,6 +17,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86_64")
+        }
     }
 
     buildTypes {
@@ -34,6 +38,16 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+}
+chaquopy {
+    defaultConfig {
+        version = "3.14"
+        buildPython("python")
+        pip {
+            install("numpy")
+        }
+    }
+
 }
 
 dependencies {
