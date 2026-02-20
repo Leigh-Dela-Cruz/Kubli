@@ -6,24 +6,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".Encodetext">
-
-    <ImageView
-        android:id="@+id/btnMenuBack"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:src="@drawable/ic_menu"
-        app:tint="#8A3FFC"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    tools:context=".Decodetext"> <ImageView
+    android:id="@+id/btnMenuBack"
+    android:layout_width="32dp"
+    android:layout_height="32dp"
+    android:src="@drawable/ic_menu"
+    app:tint="#8A3FFC"
+    android:layout_marginStart="24dp"
+    android:layout_marginTop="24dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Encoded Text"
+        android:text="Decode"
         android:textColor="#8A3FFC"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -64,7 +62,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Original message"
+                android:text="Original text to decode"
                 android:textSize="14sp"
                 android:textColor="#1F2937"
                 android:textStyle="bold"
@@ -78,10 +76,10 @@
                 android:minHeight="100dp">
 
                 <TextView
-                    android:id="@+id/txtOriginalMessage"
+                    android:id="@+id/txtInputMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:text="This is the original text to be encoded...."
+                    tools:text="This is the original text to be decoded...."
                     android:textColor="#BABABA"
                     android:textSize="14sp"/>
             </LinearLayout>
@@ -110,7 +108,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Encrypted Text"
+                android:text="Decoded Text"
                 android:textSize="14sp"
                 android:textColor="#1F2937"
                 android:textStyle="bold"
@@ -125,10 +123,10 @@
                 android:minHeight="150dp">
 
                 <TextView
-                    android:id="@+id/txtEncryptedMessage"
+                    android:id="@+id/txtDecodedMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Encoding text... please wait."
+                    android:text="Decoding text... please wait."
                     android:textColor="#1F2937"
                     android:textSize="14sp"
                     android:textStyle="bold"/>

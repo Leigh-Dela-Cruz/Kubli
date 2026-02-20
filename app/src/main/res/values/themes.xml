@@ -16,4 +16,10 @@
     <style name="BottomNavTextSize">
         <item name="android:textSize">10sp</item> <item name="android:fontFamily">sans-serif-medium</item>
     </style>
+
+    <style name="RoundedSquare">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
 </resources>

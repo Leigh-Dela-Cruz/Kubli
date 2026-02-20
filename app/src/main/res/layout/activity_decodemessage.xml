@@ -3,19 +3,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".Encodetext">
+    tools:context=".Decodemessage">
 
     <ImageView
-        android:id="@+id/btnMenuBack"
+        android:id="@+id/btnMenu"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:src="@drawable/ic_menu"
-        app:tint="#8A3FFC"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
+        app:tint="#8A3FFC"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,14 +24,14 @@
         android:id="@+id/textTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Encoded Text"
+        android:text="Decode Message"
         android:textColor="#8A3FFC"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="@+id/btnMenuBack"
-        app:layout_constraintBottom_toBottomOf="@+id/btnMenuBack"
+        app:layout_constraintTop_toTopOf="@+id/btnMenu"
+        app:layout_constraintBottom_toBottomOf="@+id/btnMenu"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <ImageView
         android:id="@+id/imgLogoTop"
@@ -39,11 +40,11 @@
         android:src="@drawable/ic_kubli_logo_purple"
         android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnMenuBack"
-        app:layout_constraintBottom_toBottomOf="@+id/btnMenuBack" />
+        app:layout_constraintTop_toTopOf="@+id/btnMenu"
+        app:layout_constraintBottom_toBottomOf="@+id/btnMenu" />
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/containerOriginal"
+        android:id="@+id/containerUpload"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
@@ -64,32 +65,50 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Original message"
+                android:text="Upload an image for Decoding"
                 android:textSize="14sp"
                 android:textColor="#1F2937"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp"/>
 
             <LinearLayout
+                android:id="@+id/layoutUploadClick"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_dashed_gray"
-                android:padding="16dp"
-                android:minHeight="100dp">
+                android:layout_height="180dp"
+                android:background="@drawable/bg_dashed_border"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/imgPreview"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_download"
+                    app:tint="#8A3FFC" />
 
                 <TextView
-                    android:id="@+id/txtOriginalMessage"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="This is the original text to be encoded...."
-                    android:textColor="#BABABA"
-                    android:textSize="14sp"/>
+                    android:text="Click or drag an image"
+                    android:textStyle="bold"
+                    android:textColor="#1F2937"
+                    android:layout_marginTop="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PNG, JPG, or WEBP format"
+                    android:textSize="12sp"
+                    android:textColor="#9CA3AF"
+                    android:layout_marginTop="4dp"/>
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/containerEncrypted"
+        android:id="@+id/containerText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
@@ -99,7 +118,7 @@
         app:cardElevation="0dp"
         app:strokeWidth="1dp"
         app:strokeColor="#E5E7EB"
-        app:layout_constraintTop_toBottomOf="@+id/containerOriginal">
+        app:layout_constraintTop_toBottomOf="@+id/containerUpload">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -110,62 +129,38 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Encrypted Text"
+                android:text="Enter text to decode"
                 android:textSize="14sp"
                 android:textColor="#1F2937"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp"/>
 
-            <LinearLayout
+            <EditText
+                android:id="@+id/inputText"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="120dp"
                 android:background="@drawable/bg_dashed_gray"
-                android:orientation="vertical"
                 android:padding="16dp"
-                android:minHeight="150dp">
-
-                <TextView
-                    android:id="@+id/txtEncryptedMessage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Encoding text... please wait."
-                    android:textColor="#1F2937"
-                    android:textSize="14sp"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCopyText"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:text="Copy Text"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:backgroundTint="#8A3FFC"
-                app:icon="@drawable/ic_copy"
-                app:iconTint="@color/white"
-                app:iconGravity="textStart"
-                app:cornerRadius="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_gravity="center_horizontal"/>
-
+                android:hint="Enter text to decode..."
+                android:gravity="top|start"
+                android:textSize="14sp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnStartNewTask"
+        android:id="@+id/btnExtractMessage"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="Start new task"
+        android:text="Extract Message"
         android:textAllCaps="false"
         android:textSize="16sp"
         android:textStyle="bold"
         android:backgroundTint="#8A3FFC"
-        app:icon="@drawable/ic_add_circle"
-        app:iconTint="@color/white"
-        app:iconGravity="textStart"
         app:cornerRadius="12dp"
+        app:icon="@drawable/ic_unlock"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:iconTint="@color/white"
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"/>
