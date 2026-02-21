@@ -81,7 +81,7 @@
                     android:id="@+id/txtOriginalMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:text="ASHDKJAHDHAHSDHSADASDHASH..."
+                    tools:text=""
                     android:textColor="#BABABA"
                     android:textSize="14sp"/>
             </LinearLayout>
@@ -128,7 +128,7 @@
                     android:id="@+id/txtEncryptedMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="This is where the encrypted text should appear"
+                    android:text=""
                     android:textColor="#1F2937"
                     android:textSize="14sp"
                     android:textStyle="bold"/>

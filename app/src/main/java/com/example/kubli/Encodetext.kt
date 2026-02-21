@@ -10,9 +10,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
-import com.chaquo.python.Python
-import com.chaquo.python.android.AndroidPlatform
+import com.example.kubli.backend.SteganographyAPI
+import kotlinx.coroutines.launch
+import com.example.kubli.backend.EncryptResult
 
 class Encodetext : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,33 +27,33 @@ class Encodetext : AppCompatActivity() {
         val txtEncrypted = findViewById<TextView>(R.id.txtEncryptedMessage)
         val btnCopy = findViewById<MaterialButton>(R.id.btnCopyText)
         val btnStartNew = findViewById<MaterialButton>(R.id.btnStartNewTask)
-
-        if (!Python.isStarted()) {
-            Python.start(AndroidPlatform(this))
-        }
-        val py = Python.getInstance()
+        val api: SteganographyAPI = SteganographyAPI(applicationContext)
 
         //Receive data from previous activity
         // We get the string we sent using the key "ORIGINAL_TEXT"
         val originalMessage = intent.getStringExtra("ORIGINAL_TEXT") ?: ""
 
-        // Display it in the gray text view
         txtOriginal.text = originalMessage
 
-        val encrypt = py.getModule("encrypt")
+        lifecycleScope.launch {
+            val secret = originalMessage.takeIf { it.isNotBlank() } ?: "Test message"
 
-        Thread {
-            val result = try {
-                encrypt.callAttr("hide_message_safe", originalMessage).toString()
+            // Generate a random 12-character alphanumeric passphrase
+            val randomPass = List(12) { ('a'..'z') + ('A'..'Z') + ('0'..'9') }.flatten()
+                .shuffled()
+                .take(12)
+                .joinToString("")
+
+            val result: EncryptResult = try {
+                api.encrypt(secret = secret, password = randomPass)
             } catch (e: Exception) {
-                e.printStackTrace()
-                "Python call failed, fallback demo output"
+                // Return a concise error
+                EncryptResult(error = "${e::class.simpleName}: ${e.message}")
             }
 
-            runOnUiThread {
-                txtEncrypted.text = result
-            }
-        }.start()
+            // Display result or concise error
+            txtEncrypted.text = result.stegoText ?: "Encryption failed: ${result.error ?: "unknown error"}"
+        }
 
         // Back Button Logic
         btnBack.setOnClickListener {

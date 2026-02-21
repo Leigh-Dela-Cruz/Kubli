@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
-    id("com.chaquo.python")
 }
 
 android {
@@ -38,17 +37,6 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-}
-chaquopy {
-    defaultConfig {
-        version = "3.13"
-        buildPython("python")
-        pip {
-            install("numpy")
-            install("pycryptodome")
-        }
-    }
-
 }
 
 dependencies {
