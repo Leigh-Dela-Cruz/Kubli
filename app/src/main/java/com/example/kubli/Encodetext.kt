@@ -45,7 +45,7 @@ class Encodetext : AppCompatActivity() {
                 .joinToString("")
 
             val result: EncryptResult = try {
-                api.encrypt(secret = secret, password = randomPass)
+                api.encrypt(secret = secret, password = "demo1234")
             } catch (e: Exception) {
                 // Return a concise error
                 EncryptResult(error = "${e::class.simpleName}: ${e.message}")
