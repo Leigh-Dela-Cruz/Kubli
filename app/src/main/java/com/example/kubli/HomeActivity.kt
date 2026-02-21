@@ -50,10 +50,10 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Decode Card Click
+        // Decode Card Click -> Opens DecodeMessage Activity
         findViewById<android.view.View>(R.id.cardDecode).setOnClickListener {
-            Toast.makeText(this, "Opening Decode Screen...", Toast.LENGTH_SHORT).show()
-            // implement the DecodeActivity connection later
+            val intent = Intent(this, Decodemessage::class.java)
+            startActivity(intent)
         }
     }
 }
