@@ -38,7 +38,6 @@ class Encodetext : AppCompatActivity() {
         lifecycleScope.launch {
             val secret = originalMessage.takeIf { it.isNotBlank() } ?: "Test message"
 
-            // Generate a random 12-character alphanumeric passphrase
             val randomPass = List(12) { ('a'..'z') + ('A'..'Z') + ('0'..'9') }.flatten()
                 .shuffled()
                 .take(12)
@@ -47,11 +46,9 @@ class Encodetext : AppCompatActivity() {
             val result: EncryptResult = try {
                 api.encrypt(secret = secret, password = "demo1234")
             } catch (e: Exception) {
-                // Return a concise error
                 EncryptResult(error = "${e::class.simpleName}: ${e.message}")
             }
 
-            // Display result or concise error
             txtEncrypted.text = result.stegoText ?: "Encryption failed: ${result.error ?: "unknown error"}"
         }
 
