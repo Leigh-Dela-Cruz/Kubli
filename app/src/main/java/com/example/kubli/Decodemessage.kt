@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -47,6 +49,11 @@ class Decodemessage : AppCompatActivity() {
         val btnMenu = findViewById<ImageView>(R.id.btnMenu)
         val inputText = findViewById<EditText>(R.id.inputText)
 
+        // Decryption Key Views
+        val btnInfo = findViewById<ImageView>(R.id.btnInfo)
+        val textInfoDesc = findViewById<TextView>(R.id.textInfoDesc)
+        val inputPassword = findViewById<EditText>(R.id.inputPassword)
+
         // Back Button
         btnMenu.setOnClickListener {
             finish()
@@ -59,9 +66,19 @@ class Decodemessage : AppCompatActivity() {
             pickImageLauncher.launch(intent)
         }
 
+        // Toggle Info Description Visibility
+        btnInfo.setOnClickListener {
+            if (textInfoDesc.visibility == View.GONE) {
+                textInfoDesc.visibility = View.VISIBLE
+            } else {
+                textInfoDesc.visibility = View.GONE
+            }
+        }
+
         // Extract Message Button
         btnExtract.setOnClickListener {
             val message = inputText.text.toString().trim()
+            val password = inputPassword.text.toString().trim() // Get the password
             val hasImage = selectedImageUri != null
             val hasText = message.isNotEmpty()
 
@@ -78,6 +95,7 @@ class Decodemessage : AppCompatActivity() {
                 Toast.makeText(this, "Processing Image...", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, Decodeimage::class.java)
                 intent.putExtra("IMAGE_URI", selectedImageUri.toString())
+                intent.putExtra("PASSWORD", password) // Pass the decryption key
                 startActivity(intent)
             }
             // ONLY Text is provided
@@ -85,8 +103,9 @@ class Decodemessage : AppCompatActivity() {
                 Toast.makeText(this, "Processing Text...", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, Decodetext::class.java)
                 intent.putExtra("TEXT_TO_DECODE", message)
+                intent.putExtra("PASSWORD", password) // Pass the decryption key
                 startActivity(intent)
             }
         }
-        }
     }
+}

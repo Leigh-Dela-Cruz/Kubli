@@ -4,10 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View // Added for visibility toggling
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView // Added for the info description
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -47,12 +49,28 @@ class Encodemessage : AppCompatActivity() {
         val btnMenu = findViewById<ImageView>(R.id.btnMenu)
         val inputText = findViewById<EditText>(R.id.inputText)
 
-        //Back Button
+        // VIEWS FOR ENCRYPTION KEY
+        val btnInfo = findViewById<ImageView>(R.id.btnInfo)
+        val textInfoDesc = findViewById<TextView>(R.id.textInfoDesc)
+        val inputPassword = findViewById<EditText>(R.id.inputPassword)
+
+        // Back Button
         btnMenu.setOnClickListener {
             finish()
         }
 
-        //Upload Area Click
+        // INFO ICON TOGGLE
+        btnInfo.setOnClickListener {
+            if (textInfoDesc.visibility == View.GONE) {
+                // Show the text
+                textInfoDesc.visibility = View.VISIBLE
+            } else {
+                // Hide the text
+                textInfoDesc.visibility = View.GONE
+            }
+        }
+
+        // Upload Area Click
         uploadArea.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
@@ -62,6 +80,7 @@ class Encodemessage : AppCompatActivity() {
         // Hide Message Button
         btnHide.setOnClickListener {
             val message = inputText.text.toString().trim()
+            val password = inputPassword.text.toString().trim() // Grab the password text
             val hasImage = selectedImageUri != null
             val hasText = message.isNotEmpty()
 
@@ -75,8 +94,11 @@ class Encodemessage : AppCompatActivity() {
 
                 // Create Intent to go to the new activity
                 val intent = Intent(this, Encodetext::class.java)
-                // Pass the original message text
+
+                // Pass the data to the next screen
                 intent.putExtra("ORIGINAL_TEXT", message)
+                intent.putExtra("PASSWORD", password) // Passing the optional password!
+
                 startActivity(intent)
             }
             // If they ONLY uploaded an image (no text)

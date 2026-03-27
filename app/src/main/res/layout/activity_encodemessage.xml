@@ -146,6 +146,70 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/containerEncryption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="20dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#E5E7EB"
+        app:layout_constraintTop_toBottomOf="@+id/containerText">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Encryption Key"
+                    android:textSize="14sp"
+                    android:textColor="#1F2937"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/btnInfo"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_info" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textInfoDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Adding a password strongly encrypts your hidden data before embedding it. Without the correct password, anyone who extracts the payload will only see unreadable gibberish."
+                android:textSize="12sp"
+                android:textColor="#4B5563"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/inputPassword"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_dashed_gray"
+                android:padding="16dp"
+                android:hint="Enter password for protection..."
+                android:inputType="textPassword"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnHideMessage"
         android:layout_width="match_parent"
@@ -161,7 +225,7 @@
         app:iconPadding="8dp"
         app:iconTint="@color/white"
         android:layout_marginHorizontal="24dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
