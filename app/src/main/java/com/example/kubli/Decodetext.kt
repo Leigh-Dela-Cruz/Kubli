@@ -27,8 +27,10 @@ class Decodetext : AppCompatActivity() {
         val btnCopyText = findViewById<MaterialButton>(R.id.btnCopyText)
         val btnStartNewTask = findViewById<MaterialButton>(R.id.btnStartNewTask)
 
-        //Receive data from previous activity
+        // Receive data from previous activity
         val decodeText = intent.getStringExtra("TEXT_TO_DECODE")
+        val passwordInput = intent.getStringExtra("PASSWORD") ?: ""
+        val password = passwordInput.ifEmpty { "demo1234" }
 
         val api = try {
             SteganographyAPI(this)
@@ -46,7 +48,7 @@ class Decodetext : AppCompatActivity() {
 
                     val result = api.decrypt(
                         stegoText = decodeText,
-                        password = "demo1234"
+                        password = password // <-- use the password here
                     )
 
                     txtDecodedMessage.text = if (result.success) {

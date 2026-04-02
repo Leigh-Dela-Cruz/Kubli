@@ -95,7 +95,7 @@ class Decodemessage : AppCompatActivity() {
                 Toast.makeText(this, "Processing Image...", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, Decodeimage::class.java)
                 intent.putExtra("IMAGE_URI", selectedImageUri.toString())
-                intent.putExtra("PASSWORD", password) // Pass the decryption key
+                intent.putExtra("PASSWORD", password)
                 startActivity(intent)
             }
             // ONLY Text is provided
@@ -103,7 +103,7 @@ class Decodemessage : AppCompatActivity() {
                 Toast.makeText(this, "Processing Text...", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, Decodetext::class.java)
                 intent.putExtra("TEXT_TO_DECODE", message)
-                intent.putExtra("PASSWORD", password) // Pass the decryption key
+                intent.putExtra("PASSWORD", password)
                 startActivity(intent)
             }
         }

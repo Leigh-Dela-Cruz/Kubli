@@ -6,12 +6,16 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.kubli.backend.SteganographyAPI
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
+import kotlinx.coroutines.launch
 
 class Decodeimage : AppCompatActivity() {
 
@@ -28,14 +32,32 @@ class Decodeimage : AppCompatActivity() {
 
         //Receive data from previous activity
         val imageUriString = intent.getStringExtra("IMAGE_URI")
+        val passwordInput = intent.getStringExtra("PASSWORD") ?: ""
+        val password = passwordInput.ifEmpty { "demo1234" }
+
         if (imageUriString != null) {
             val imageUri = Uri.parse(imageUriString)
             imgDecryptedResult.setImageURI(imageUri)
 
-            // call Steganography/Decoding function
-            // to extract the real hidden text from 'imageUri'.
-            // dummy text: -> used only as a placeholder
-            textDecodedResult.text = "This is a secret message hidden inside the cat picture!"
+            lifecycleScope.launch {
+                try {
+                    val api = SteganographyAPI(this@Decodeimage)
+
+                    val result = api.decryptImage(
+                        context = this@Decodeimage,
+                        imageUri = imageUri,
+                        password = password
+                    )
+
+                    textDecodedResult.text = if (result.success) {
+                        result.message ?: "Decoded, but message is empty."
+                    } else {
+                        "Decoding failed: ${result.error ?: "Unknown error"}"
+                    }
+                } catch (e: Exception) {
+                    textDecodedResult.text = "Crash prevented: ${e.localizedMessage}"
+                }
+            }
         }
 
         // Back Button

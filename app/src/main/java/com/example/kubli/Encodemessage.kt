@@ -13,6 +13,17 @@ import android.widget.TextView // Added for the info description
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import androidx.core.content.FileProvider
+import android.graphics.Bitmap
+import android.provider.MediaStore
+import androidx.lifecycle.lifecycleScope
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import com.example.kubli.backend.ImageSteganography
+import com.example.kubli.backend.SteganographyAPI
+import kotlinx.coroutines.launch
 
 class Encodemessage : AppCompatActivity() {
 
@@ -103,9 +114,43 @@ class Encodemessage : AppCompatActivity() {
             }
             // If they ONLY uploaded an image (no text)
             else if (hasImage && !hasText) {
-                Toast.makeText(this, "Image encoding flow not implemented yet", Toast.LENGTH_SHORT).show()
-                // redirect to an image-specific result screen here later
+                Toast.makeText(this, "Encoding image...", Toast.LENGTH_SHORT).show()
+
+                // Load bitmap from URI
+                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedImageUri)
+
+                // Encode empty string (or later you can use text + password)
+                val passwordToUse = inputPassword.text.toString().trim().ifEmpty { "demo1234" }
+                val api = SteganographyAPI(this)
+
+                lifecycleScope.launch {
+                    val result = api.encryptImage("", passwordToUse, bitmap)
+                    if (result.success) {
+                        val stegoBitmap = ImageSteganography.encode("", passwordToUse, bitmap) // still need the bitmap to display
+                        val imgEncodedResult = findViewById<ImageView>(R.id.imgEncodedResult)
+                        imgEncodedResult.visibility = View.VISIBLE
+                        imgEncodedResult.setImageBitmap(stegoBitmap)
+                        Toast.makeText(this@Encodemessage, "Encoded image ready!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@Encodemessage, "Encoding failed: ${result.error}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
+        }
+    }
+
+    private fun saveBitmapAsFile(bitmap: Bitmap, context: Context): Uri? {
+        return try {
+            val file = File(context.cacheDir, "stego_image.png")
+            val fos = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            fos.flush()
+            fos.close()
+            // Use FileProvider to get URI
+            FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
         }
     }
 }

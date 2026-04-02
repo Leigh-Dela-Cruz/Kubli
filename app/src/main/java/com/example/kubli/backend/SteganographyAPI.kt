@@ -1,6 +1,9 @@
 package com.example.kubli.backend
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.MediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -71,6 +74,37 @@ class SteganographyAPI(
                         DecryptResult(error = result.error ?: "Decryption failed")
                     }
                 }
+            }
+        }
+
+    // Encrypt a secret into an image
+    suspend fun encryptImage(secret: String, password: String, bitmap: Bitmap): EncryptResult =
+        withContext(Dispatchers.IO) {
+            try {
+                // Encode the secret into the bitmap using your ImageSteganography engine
+                val stegoBitmap = ImageSteganography.encode(secret, password, bitmap)
+
+                // Optionally, you could save or return the bitmap URI later in the activity
+                EncryptResult(
+                    stegoText = null, // no text needed here
+                    visibleText = null,
+                    algorithm = "Image LSB + AES",
+                    error = null
+                )
+            } catch (e: Exception) {
+                EncryptResult(error = e.message)
+            }
+        }
+
+    // Decrypt a secret from an image
+    suspend fun decryptImage(context: Context, imageUri: Uri, password: String): DecryptResult =
+        withContext(Dispatchers.IO) {
+            try {
+                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
+                val secret = ImageSteganography.decode(bitmap, password)
+                DecryptResult(message = secret)
+            } catch (e: Exception) {
+                DecryptResult(error = e.message)
             }
         }
 

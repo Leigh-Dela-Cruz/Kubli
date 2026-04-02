@@ -38,13 +38,10 @@ class Encodetext : AppCompatActivity() {
         lifecycleScope.launch {
             val secret = originalMessage.takeIf { it.isNotBlank() } ?: "Test message"
 
-            val randomPass = List(12) { ('a'..'z') + ('A'..'Z') + ('0'..'9') }.flatten()
-                .shuffled()
-                .take(12)
-                .joinToString("")
+            val password = intent.getStringExtra("PASSWORD")?.takeIf { it.isNotBlank() } ?: "demo1234"
 
             val result: EncryptResult = try {
-                api.encrypt(secret = secret, password = "demo1234")
+                api.encrypt(secret = secret, password = password)
             } catch (e: Exception) {
                 EncryptResult(error = "${e::class.simpleName}: ${e.message}")
             }
