@@ -5,11 +5,16 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import com.example.kubli.backend.SteganographyAPI
+import kotlinx.coroutines.launch
+import com.example.kubli.backend.EncryptResult
 
 class Encodetext : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,18 +27,30 @@ class Encodetext : AppCompatActivity() {
         val txtEncrypted = findViewById<TextView>(R.id.txtEncryptedMessage)
         val btnCopy = findViewById<MaterialButton>(R.id.btnCopyText)
         val btnStartNew = findViewById<MaterialButton>(R.id.btnStartNewTask)
+        val api: SteganographyAPI = SteganographyAPI(applicationContext)
 
         //Receive data from previous activity
         // We get the string we sent using the key "ORIGINAL_TEXT"
         val originalMessage = intent.getStringExtra("ORIGINAL_TEXT") ?: ""
 
-        // Display it in the gray text view
         txtOriginal.text = originalMessage
 
-        // Set placeholder encrypted text
-        //message is a placeholder for backend
-        val placeholderEncryptedText = "This is where the encrypted text should appear"
-        txtEncrypted.text = placeholderEncryptedText
+        lifecycleScope.launch {
+            val secret = originalMessage.takeIf { it.isNotBlank() } ?: "Test message"
+
+            val randomPass = List(12) { ('a'..'z') + ('A'..'Z') + ('0'..'9') }.flatten()
+                .shuffled()
+                .take(12)
+                .joinToString("")
+
+            val result: EncryptResult = try {
+                api.encrypt(secret = secret, password = "demo1234")
+            } catch (e: Exception) {
+                EncryptResult(error = "${e::class.simpleName}: ${e.message}")
+            }
+
+            txtEncrypted.text = result.stegoText ?: "Encryption failed: ${result.error ?: "unknown error"}"
+        }
 
         // Back Button Logic
         btnBack.setOnClickListener {
