@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.content.Context
 import androidx.core.content.FileProvider
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.provider.MediaStore
 import androidx.lifecycle.lifecycleScope
 import java.io.File
@@ -99,6 +100,36 @@ class Encodemessage : AppCompatActivity() {
             if (!hasImage && !hasText) {
                 Toast.makeText(this, "Please upload an image OR enter text", Toast.LENGTH_SHORT).show()
             }
+            // Encoding image
+            else if (hasImage && hasText) {
+                Toast.makeText(this, "Encoding image with hidden text...", Toast.LENGTH_SHORT).show()
+
+                val bitmap = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                    val source = ImageDecoder.createSource(contentResolver, selectedImageUri!!)
+                    ImageDecoder.decodeBitmap(source)
+                } else {
+                    MediaStore.Images.Media.getBitmap(contentResolver, selectedImageUri)
+                }
+                val passwordToUse = password.ifEmpty { "demo1234" }
+
+                val api = SteganographyAPI(this)
+
+                lifecycleScope.launch {
+                    val result = api.encryptImage(message, passwordToUse, bitmap)
+
+                    if (result.success) {
+                        val stegoBitmap = ImageSteganography.encode(message, passwordToUse, bitmap)
+
+                        val imgEncodedResult = findViewById<ImageView>(R.id.imgEncodedResult)
+                        imgEncodedResult.visibility = View.VISIBLE
+                        imgEncodedResult.setImageBitmap(stegoBitmap)
+
+                        Toast.makeText(this@Encodemessage, "Encoded image ready!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@Encodemessage, "Encoding failed: ${result.error}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
             // If user entered TEXT (even if they also uploaded an image for now), go to Encodetext flow
             else if (hasText) {
                 Toast.makeText(this, "Encoding Text...", Toast.LENGTH_SHORT).show()
@@ -114,27 +145,7 @@ class Encodemessage : AppCompatActivity() {
             }
             // If they ONLY uploaded an image (no text)
             else if (hasImage && !hasText) {
-                Toast.makeText(this, "Encoding image...", Toast.LENGTH_SHORT).show()
-
-                // Load bitmap from URI
-                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedImageUri)
-
-                // Encode empty string (or later you can use text + password)
-                val passwordToUse = inputPassword.text.toString().trim().ifEmpty { "demo1234" }
-                val api = SteganographyAPI(this)
-
-                lifecycleScope.launch {
-                    val result = api.encryptImage("", passwordToUse, bitmap)
-                    if (result.success) {
-                        val stegoBitmap = ImageSteganography.encode("", passwordToUse, bitmap) // still need the bitmap to display
-                        val imgEncodedResult = findViewById<ImageView>(R.id.imgEncodedResult)
-                        imgEncodedResult.visibility = View.VISIBLE
-                        imgEncodedResult.setImageBitmap(stegoBitmap)
-                        Toast.makeText(this@Encodemessage, "Encoded image ready!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@Encodemessage, "Encoding failed: ${result.error}", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                Toast.makeText(this, "Please type a message first before encoding into image", Toast.LENGTH_SHORT).show()
             }
         }
     }
