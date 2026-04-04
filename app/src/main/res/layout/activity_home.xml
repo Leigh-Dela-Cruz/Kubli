@@ -198,7 +198,9 @@
             app:itemTextColor="@color/nav_item_colors"
             app:itemTextAppearanceActive="@style/BottomNavTextSize"
             app:itemTextAppearanceInactive="@style/BottomNavTextSize"
-            app:labelVisibilityMode="labeled"
+
+            app:labelVisibilityMode="selected"
+
             app:itemIconSize="24dp"
             app:itemPaddingTop="8dp"
             app:itemPaddingBottom="8dp"

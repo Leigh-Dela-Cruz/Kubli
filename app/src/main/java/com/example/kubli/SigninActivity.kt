@@ -60,10 +60,12 @@ class SigninActivity : AppCompatActivity() {
                         // Login Success
                         Toast.makeText(this@SigninActivity, "Welcome back, ${user.fullName}!", Toast.LENGTH_SHORT).show()
 
-                        // Save User Session
+                        // Save User Session (UPDATED TO INCLUDE EMAIL AND PROFILE NAME)
                         val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
                         with (sharedPref.edit()) {
-                            putString("CURRENT_USERNAME", user.fullName)
+                            putString("CURRENT_USERNAME", user.fullName) // Used for Home Screen
+                            putString("USER_NAME", user.fullName)        // Used for Profile Screen
+                            putString("USER_EMAIL", user.email)          // Used for Profile Screen
                             putBoolean("IS_LOGGED_IN", true)
                             apply()
                         }
