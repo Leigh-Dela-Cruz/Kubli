@@ -4,12 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.View // Added for visibility toggling
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView // Added for the info description
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -84,27 +84,40 @@ class Encodemessage : AppCompatActivity() {
             val hasImage = selectedImageUri != null
             val hasText = message.isNotEmpty()
 
-            // Check if BOTH are empty
+            // Scenario 1: Both are empty
             if (!hasImage && !hasText) {
-                Toast.makeText(this, "Please upload an image OR enter text", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter text or upload an image", Toast.LENGTH_SHORT).show()
             }
-            // If user entered TEXT (even if they also uploaded an image for now), go to Encodetext flow
-            else if (hasText) {
-                Toast.makeText(this, "Encoding Text...", Toast.LENGTH_SHORT).show()
+            // Scenario 2: User uploaded an Image AND entered Text
+            else if (hasImage && hasText) {
+                Toast.makeText(this, "Encoding text into image...", Toast.LENGTH_SHORT).show()
 
-                // Create Intent to go to the new activity
-                val intent = Intent(this, Encodetext::class.java)
+                // Create Intent to go to Encodeimage activity
+                val intent = Intent(this, Encodeimage::class.java)
 
-                // Pass the data to the next screen
+                // Pass all three pieces of data
+                intent.putExtra("IMAGE_URI", selectedImageUri.toString())
                 intent.putExtra("ORIGINAL_TEXT", message)
-                intent.putExtra("PASSWORD", password) // Passing the optional password!
+                intent.putExtra("PASSWORD", password)
 
                 startActivity(intent)
             }
-            // If they ONLY uploaded an image (no text)
+            // Scenario 3: User ONLY entered Text (No image uploaded)
+            else if (!hasImage && hasText) {
+                Toast.makeText(this, "Encoding Text...", Toast.LENGTH_SHORT).show()
+
+                // Create Intent to go to Encodetext activity
+                val intent = Intent(this, Encodetext::class.java)
+
+                // Pass only the text and password
+                intent.putExtra("ORIGINAL_TEXT", message)
+                intent.putExtra("PASSWORD", password)
+
+                startActivity(intent)
+            }
+            // Scenario 4: User uploaded an Image but forgot to enter Text to hide
             else if (hasImage && !hasText) {
-                Toast.makeText(this, "Image encoding flow not implemented yet", Toast.LENGTH_SHORT).show()
-                // redirect to an image-specific result screen here later
+                Toast.makeText(this, "Please enter the text you want to hide inside the image.", Toast.LENGTH_LONG).show()
             }
         }
     }

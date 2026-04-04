@@ -8,6 +8,9 @@
         android:label="@string/app_name"
         android:theme="@style/Base.Theme.Kubli">
         <activity
+            android:name=".Encodeimage"
+            android:exported="false" />
+        <activity
             android:name=".Decodeimage"
             android:exported="false" />
         <activity
