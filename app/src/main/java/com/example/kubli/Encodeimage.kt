@@ -8,6 +8,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder.decodeBitmap
+import com.example.kubli.backend.SteganographyAPI
+import android.graphics.ImageDecoder.createSource
 
 class Encodeimage : AppCompatActivity() {
 
@@ -29,11 +37,49 @@ class Encodeimage : AppCompatActivity() {
         //Retrieve the incoming Image URI and display it
         // (This gets the data passed from Encodemessage.kt)
         val imageUriString = intent.getStringExtra("IMAGE_URI")
+        val originalText = intent.getStringExtra("ORIGINAL_TEXT") ?: ""
+        val passwordInput = intent.getStringExtra("PASSWORD") ?: ""
+        val password = passwordInput.ifEmpty { "demo1234" }
+
         if (imageUriString != null) {
             val imageUri = Uri.parse(imageUriString)
-            imgEncodedResult.setImageURI(imageUri)
+
+            // Encode using SteganographyAPI
+            val api = SteganographyAPI(this)
+            lifecycleScope.launch {
+                try {
+                    // Decode bitmap on a background thread
+                    val bitmap: Bitmap = withContext(Dispatchers.IO) {
+                        decodeBitmap(createSource(contentResolver, imageUri))
+                    }
+
+                    val result = api.encryptImage(originalText, password, bitmap)
+                    if (result.success) {
+                        imgEncodedResult.setImageBitmap(result.stegoBitmap)
+                        imgEncodedResult.visibility = ImageView.VISIBLE
+                        Toast.makeText(
+                            this@Encodeimage,
+                            "Encoded image ready!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            this@Encodeimage,
+                            "Encoding failed: ${result.error}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        this@Encodeimage,
+                        "Error processing image: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         } else {
-            //Set a placeholder or default image if none was passed
+            Toast.makeText(this, "No image received", Toast.LENGTH_SHORT).show()
+            finish()
         }
 
         //Back/Menu Button

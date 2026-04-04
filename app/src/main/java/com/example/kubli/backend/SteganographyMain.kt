@@ -1,6 +1,7 @@
 package com.example.kubli.backend
 
 import android.content.Context
+import javax.crypto.AEADBadTagException
 
 // Main engine that handles hiding and finding secret messages
 
@@ -39,28 +40,32 @@ class SteganographyMain(
     
     // This function finds and retrieves a hidden secret from text.
     fun decrypt(stegoText: String, passphrase: String): Result {
-        // Check if the text actually contains any hidden data before trying to read it.
+        // 1. Check if the text actually contains any hidden data (Zero-width chars)
         if (!ZeroSteganography.hasHidden(stegoText)) {
-            return Result(false, error = "No hidden data found")
+            return Result(false, error = "This text does not contain a hidden message.")
         }
         
-        // Extract the hidden bits from the text.
+        // 2. Extract the hidden bits from the text.
         val bits = ZeroSteganography.extract(stegoText)
         
-        // Convert those bits back into encrypted data and fix any small errors.
+        // 3. Convert those bits back into encrypted data and fix any small errors.
         val (encrypted, errors) = BitstreamUtility.extractEncryptedData(bits, useHamming)
         
         if (encrypted == null) {
-            return Result(false, error = "Invalid data")
+            // This happens if Hamming decoding fails or the length header is missing/wrong.
+            return Result(false, error = "The hidden message is incomplete or corrupted.")
         }
         
-        // Try to decrypt the data using the password to get the original message back.
+        // 4. Try to decrypt the data using the password to get the original message back.
         return try {
             val message = CryptoUtility.decrypt(encrypted, passphrase)
             Result(true, data = message, errorsCorrected = errors)
+        } catch (e: AEADBadTagException) {
+            // AES-GCM throws this when the password (key) is wrong or data is tampered with.
+            Result(false, error = "Incorrect password or corrupted data.")
         } catch (e: Exception) {
-            // Return an error if the password is wrong or the data is corrupted.
-            Result(false, error = "Decryption failed: ${e.message}")
+            // Return an error for any other decryption issues.
+            Result(false, error = "Decryption failed: ${e.localizedMessage}")
         }
     }
     

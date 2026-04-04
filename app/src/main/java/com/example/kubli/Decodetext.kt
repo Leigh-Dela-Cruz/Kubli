@@ -48,7 +48,7 @@ class Decodetext : AppCompatActivity() {
 
                     val result = api.decrypt(
                         stegoText = decodeText,
-                        password = password // <-- use the password here
+                        password = password
                     )
 
                     txtDecodedMessage.text = if (result.success) {

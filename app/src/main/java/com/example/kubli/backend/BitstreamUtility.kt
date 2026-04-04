@@ -26,12 +26,24 @@ object BitstreamUtility {
             try {
                 // Decode bitstream and fix errors
                 val (bytes, errors) = HammingCode.decodeBytes(bits)
+                
+                if (bytes.size < 4) return Pair(null, errors)
+                
                 // Read data length
                 val length = bytesToInt(bytes.sliceArray(0..3))
-                // Get encrypted data
-                val bitsData = bytes.sliceArray(4 until bytes.size)
+                
+                // Security check for unrealistic length
+                if (length <= 0 || length > 1000000) return Pair(null, errors)
 
-                // Check minimum required size
+                // Get encrypted data
+                val bitsData = if (bytes.size >= 4 + length) {
+                    bytes.sliceArray(4 until 4 + length)
+                } else {
+                    // Data is incomplete
+                    return Pair(null, errors)
+                }
+
+                // Check minimum required size (Salt 16 + Nonce 12)
                 if (bitsData.size >= 28) {
                     Pair(EncryptedData(
                         bitsData.sliceArray(0..15),
@@ -47,7 +59,7 @@ object BitstreamUtility {
         } else {
             try {
                 // Convert bits back to bytes
-                val bytes = bits.chunked(8).map { it.toInt(2).toByte() }.toByteArray()
+                val bytes = bits.chunked(8).filter { it.length == 8 }.map { it.toInt(2).toByte() }.toByteArray()
 
                 // Validate data size
                 if (bytes.size >= 28) {

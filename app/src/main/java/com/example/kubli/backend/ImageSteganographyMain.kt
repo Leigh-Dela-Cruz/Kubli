@@ -10,47 +10,75 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import java.util.zip.Deflater
 import java.util.zip.Inflater
+import javax.crypto.BadPaddingException
 
 class ImageSteganography {
 
     companion object {
+
+        // Use a unique marker to identify if an image contains a Kubli payload
+        private val MAGIC_MARKER = "KUBLI".toByteArray(Charsets.UTF_8)
 
         // ============================
         // MAIN FUNCTIONS
         // ============================
 
         fun encode(message: String, password: String, bitmap: Bitmap): Bitmap {
-
             // 1. Compress
             val compressed = compress(message.toByteArray(Charsets.UTF_8))
 
             // 2. Encrypt
             val encrypted = encrypt(compressed, password)
 
-            // 3. Add length header
-            val payload = addLengthHeader(encrypted)
+            // 3. Add Magic Marker + length header
+            val payload = addHeader(encrypted)
 
             // 4. Embed into image
             return embedLSB(bitmap, payload)
         }
 
         fun decode(bitmap: Bitmap, password: String): String {
-
             // 1. Extract raw data
             val extracted = extractLSB(bitmap)
-
-            // 2. Read length header
             val buffer = ByteBuffer.wrap(extracted)
+
+            // 2. Check Magic Marker
+            val marker = ByteArray(MAGIC_MARKER.size)
+            if (buffer.remaining() < MAGIC_MARKER.size) {
+                throw IllegalArgumentException("This image does not contain a valid hidden message.")
+            }
+            buffer.get(marker)
+            if (!marker.contentEquals(MAGIC_MARKER)) {
+                throw IllegalArgumentException("This image does not contain a valid hidden message.")
+            }
+
+            // 3. Read length header
+            if (buffer.remaining() < 4) {
+                throw IllegalArgumentException("Hidden message data is corrupted.")
+            }
             val length = buffer.int
+            if (length <= 0 || length > buffer.remaining()) {
+                throw IllegalArgumentException("Hidden message data is corrupted or invalid.")
+            }
 
             val encrypted = ByteArray(length)
             buffer.get(encrypted)
 
-            // 3. Decrypt
-            val decrypted = decrypt(encrypted, password)
+            // 4. Decrypt
+            val decrypted = try {
+                decrypt(encrypted, password)
+            } catch (e: BadPaddingException) {
+                throw IllegalArgumentException("Incorrect password.")
+            } catch (e: Exception) {
+                throw IllegalArgumentException("Failed to decrypt: ${e.message}")
+            }
 
-            // 4. Decompress
-            val decompressed = decompress(decrypted)
+            // 5. Decompress
+            val decompressed = try {
+                decompress(decrypted)
+            } catch (e: Exception) {
+                throw IllegalArgumentException("Hidden message is corrupted.")
+            }
 
             return String(decompressed, Charsets.UTF_8)
         }
@@ -71,7 +99,7 @@ class ImageSteganography {
                 val count = deflater.deflate(buffer)
                 output.write(buffer, 0, count)
             }
-
+            deflater.end()
             return output.toByteArray()
         }
 
@@ -82,9 +110,14 @@ class ImageSteganography {
             val output = ByteArrayOutputStream()
             val buffer = ByteArray(1024)
 
-            while (!inflater.finished()) {
-                val count = inflater.inflate(buffer)
-                output.write(buffer, 0, count)
+            try {
+                while (!inflater.finished()) {
+                    val count = inflater.inflate(buffer)
+                    if (count == 0 && inflater.needsInput()) break
+                    output.write(buffer, 0, count)
+                }
+            } finally {
+                inflater.end()
             }
 
             return output.toByteArray()
@@ -95,21 +128,13 @@ class ImageSteganography {
         // ============================
 
         private fun getAESKey(password: String): SecretKeySpec {
-
-            require(password.length <= 8) {
-                "Password must be at most 8 characters."
-            }
-
             val digest = MessageDigest.getInstance("SHA-256")
             val keyBytes = digest.digest(password.toByteArray(Charsets.UTF_8))
-
             return SecretKeySpec(keyBytes, "AES")
         }
 
         fun encrypt(data: ByteArray, password: String): ByteArray {
-
             val key = getAESKey(password)
-
             val iv = ByteArray(16)
             SecureRandom().nextBytes(iv)
 
@@ -123,7 +148,7 @@ class ImageSteganography {
         }
 
         fun decrypt(data: ByteArray, password: String): ByteArray {
-
+            if (data.size < 16) throw IllegalArgumentException("Invalid encrypted data.")
             val iv = data.copyOfRange(0, 16)
             val ciphertext = data.copyOfRange(16, data.size)
 
@@ -140,7 +165,6 @@ class ImageSteganography {
         // ============================
 
         fun embedLSB(bitmap: Bitmap, data: ByteArray): Bitmap {
-
             val width = bitmap.width
             val height = bitmap.height
 
@@ -157,7 +181,6 @@ class ImageSteganography {
 
             for (y in 0 until height) {
                 for (x in 0 until width) {
-
                     if (bitIndex >= bits.size) return result
 
                     val pixel = result.getPixel(x, y)
@@ -185,7 +208,6 @@ class ImageSteganography {
         }
 
         fun extractLSB(bitmap: Bitmap): ByteArray {
-
             val width = bitmap.width
             val height = bitmap.height
 
@@ -193,9 +215,7 @@ class ImageSteganography {
 
             for (y in 0 until height) {
                 for (x in 0 until width) {
-
                     val pixel = bitmap.getPixel(x, y)
-
                     bits.add((pixel shr 16) and 1)
                     bits.add((pixel shr 8) and 1)
                     bits.add(pixel and 1)
@@ -209,8 +229,9 @@ class ImageSteganography {
         // HELPERS
         // ============================
 
-        private fun addLengthHeader(data: ByteArray): ByteArray {
-            val buffer = ByteBuffer.allocate(4 + data.size)
+        private fun addHeader(data: ByteArray): ByteArray {
+            val buffer = ByteBuffer.allocate(MAGIC_MARKER.size + 4 + data.size)
+            buffer.put(MAGIC_MARKER)
             buffer.putInt(data.size)
             buffer.put(data)
             return buffer.array()

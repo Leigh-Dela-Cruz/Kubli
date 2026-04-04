@@ -13,18 +13,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import android.content.Context
-import androidx.core.content.FileProvider
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.provider.MediaStore
-import androidx.lifecycle.lifecycleScope
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import com.example.kubli.backend.ImageSteganography
-import com.example.kubli.backend.SteganographyAPI
-import kotlinx.coroutines.launch
 
 class Encodemessage : AppCompatActivity() {
 
@@ -104,29 +92,12 @@ class Encodemessage : AppCompatActivity() {
             else if (hasImage && hasText) {
                 Toast.makeText(this, "Encoding image with hidden text...", Toast.LENGTH_SHORT).show()
 
-                val bitmap = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                    val source = ImageDecoder.createSource(contentResolver, selectedImageUri!!)
-                    ImageDecoder.decodeBitmap(source)
-                } else {
-                    MediaStore.Images.Media.getBitmap(contentResolver, selectedImageUri)
-                }
-
-                val passwordToUse = password.ifEmpty { "demo1234" }
-                val api = SteganographyAPI(this)
-
-                lifecycleScope.launch {
-                    val result = api.encryptImage(message, passwordToUse, bitmap)
-
-                    if (result.success) {
-                        val imgEncodedResult = findViewById<ImageView>(R.id.imgEncodedResult)
-                        imgEncodedResult.visibility = View.VISIBLE
-                        imgEncodedResult.setImageBitmap(result.stegoBitmap)
-
-                        Toast.makeText(this@Encodemessage, "Encoded image ready!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@Encodemessage, "Encoding failed: ${result.error}", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                // Pass everything to Encodeimage activity
+                val intent = Intent(this, Encodeimage::class.java)
+                intent.putExtra("IMAGE_URI", selectedImageUri.toString())
+                intent.putExtra("ORIGINAL_TEXT", message)
+                intent.putExtra("PASSWORD", password)
+                startActivity(intent)
             }
             // Scenario 3: User ONLY entered Text (No image uploaded)
             else if (!hasImage && hasText) {
@@ -145,21 +116,6 @@ class Encodemessage : AppCompatActivity() {
             else if (hasImage && !hasText) {
                 Toast.makeText(this, "Please enter the text you want to hide inside the image.", Toast.LENGTH_LONG).show()
             }
-        }
-    }
-
-    private fun saveBitmapAsFile(bitmap: Bitmap, context: Context): Uri? {
-        return try {
-            val file = File(context.cacheDir, "stego_image.png")
-            val fos = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
-            fos.flush()
-            fos.close()
-            // Use FileProvider to get URI
-            FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            null
         }
     }
 }
