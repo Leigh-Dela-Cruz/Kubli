@@ -7,7 +7,6 @@ import android.provider.MediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-
 // Steganography API
 
 class SteganographyAPI(
@@ -78,21 +77,22 @@ class SteganographyAPI(
         }
 
     // Encrypt a secret into an image
-    suspend fun encryptImage(secret: String, password: String, bitmap: Bitmap): EncryptResult =
+    suspend fun encryptImage(secret: String, password: String, bitmap: Bitmap): ImageEncryptResult =
         withContext(Dispatchers.IO) {
             try {
-                // Encode the secret into the bitmap using your ImageSteganography engine
+                if (secret.isBlank()) {
+                    return@withContext ImageEncryptResult(error = "Secret cannot be empty")
+                }
+                if (password.length < 8) {
+                    return@withContext ImageEncryptResult(error = "Password must be 8+ characters")
+                }
+
                 val stegoBitmap = ImageSteganography.encode(secret, password, bitmap)
 
-                // Optionally, you could save or return the bitmap URI later in the activity
-                EncryptResult(
-                    stegoText = null, // no text needed here
-                    visibleText = null,
-                    algorithm = "Image LSB + AES",
-                    error = null
-                )
+                ImageEncryptResult(stegoBitmap = stegoBitmap)
+
             } catch (e: Exception) {
-                EncryptResult(error = e.message)
+                ImageEncryptResult(error = e.message)
             }
         }
 
@@ -130,5 +130,12 @@ data class DecryptResult(
     val error: String? = null          // Holds an error message if something went wrong.
 ) {
     // Check if the process was successful.
+    val success: Boolean get() = error == null
+}
+
+data class ImageEncryptResult(
+    val stegoBitmap: Bitmap? = null,
+    val error: String? = null
+) {
     val success: Boolean get() = error == null
 }

@@ -4,12 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.View // Added for visibility toggling
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView // Added for the info description
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -96,11 +96,11 @@ class Encodemessage : AppCompatActivity() {
             val hasImage = selectedImageUri != null
             val hasText = message.isNotEmpty()
 
-            // Check if BOTH are empty
+            // Scenario 1: Both are empty
             if (!hasImage && !hasText) {
-                Toast.makeText(this, "Please upload an image OR enter text", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter text or upload an image", Toast.LENGTH_SHORT).show()
             }
-            // Encoding image
+            // Scenario 2: User uploaded an Image AND entered Text
             else if (hasImage && hasText) {
                 Toast.makeText(this, "Encoding image with hidden text...", Toast.LENGTH_SHORT).show()
 
@@ -110,19 +110,17 @@ class Encodemessage : AppCompatActivity() {
                 } else {
                     MediaStore.Images.Media.getBitmap(contentResolver, selectedImageUri)
                 }
-                val passwordToUse = password.ifEmpty { "demo1234" }
 
+                val passwordToUse = password.ifEmpty { "demo1234" }
                 val api = SteganographyAPI(this)
 
                 lifecycleScope.launch {
                     val result = api.encryptImage(message, passwordToUse, bitmap)
 
                     if (result.success) {
-                        val stegoBitmap = ImageSteganography.encode(message, passwordToUse, bitmap)
-
                         val imgEncodedResult = findViewById<ImageView>(R.id.imgEncodedResult)
                         imgEncodedResult.visibility = View.VISIBLE
-                        imgEncodedResult.setImageBitmap(stegoBitmap)
+                        imgEncodedResult.setImageBitmap(result.stegoBitmap)
 
                         Toast.makeText(this@Encodemessage, "Encoded image ready!", Toast.LENGTH_SHORT).show()
                     } else {
@@ -130,22 +128,22 @@ class Encodemessage : AppCompatActivity() {
                     }
                 }
             }
-            // If user entered TEXT (even if they also uploaded an image for now), go to Encodetext flow
-            else if (hasText) {
+            // Scenario 3: User ONLY entered Text (No image uploaded)
+            else if (!hasImage && hasText) {
                 Toast.makeText(this, "Encoding Text...", Toast.LENGTH_SHORT).show()
 
-                // Create Intent to go to the new activity
+                // Create Intent to go to Encodetext activity
                 val intent = Intent(this, Encodetext::class.java)
 
-                // Pass the data to the next screen
+                // Pass only the text and password
                 intent.putExtra("ORIGINAL_TEXT", message)
-                intent.putExtra("PASSWORD", password) // Passing the optional password!
+                intent.putExtra("PASSWORD", password)
 
                 startActivity(intent)
             }
-            // If they ONLY uploaded an image (no text)
+            // Scenario 4: User uploaded an Image but forgot to enter Text to hide
             else if (hasImage && !hasText) {
-                Toast.makeText(this, "Please type a message first before encoding into image", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter the text you want to hide inside the image.", Toast.LENGTH_LONG).show()
             }
         }
     }
