@@ -58,7 +58,7 @@ class SigninActivity : AppCompatActivity() {
                     if (inputHash == user.passwordHash) {
 
                         // Login Success
-                        Toast.makeText(this@SigninActivity, "Welcome back, ${user.fullName}!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@SigninActivity, "Login Successful", Toast.LENGTH_SHORT).show()
 
                         // Save User Session (UPDATED TO INCLUDE EMAIL AND PROFILE NAME)
                         val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)

@@ -42,7 +42,10 @@ class UserProfileActivity : AppCompatActivity() {
 
         // Handle Back Navigation
         btnBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+            val intent = Intent(this, HomeActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()
         }
 
         // Navigate to Edit Profile

@@ -36,6 +36,9 @@ class EditProfileActivity : AppCompatActivity() {
 
         // HANDLE BACK BUTTON
         btnBack.setOnClickListener {
+            val intent = Intent(this, UserProfileActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
             finish()
         }
 
