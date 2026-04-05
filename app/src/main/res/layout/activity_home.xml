@@ -191,14 +191,16 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             app:menu="@menu/bottom_nav_menu"
             app:itemIconTint="@color/nav_item_colors"
             app:itemTextColor="@color/nav_item_colors"
             app:itemTextAppearanceActive="@style/BottomNavTextSize"
             app:itemTextAppearanceInactive="@style/BottomNavTextSize"
-            app:labelVisibilityMode="labeled"
+
+            app:labelVisibilityMode="selected"
+
             app:itemIconSize="24dp"
             app:itemPaddingTop="8dp"
             app:itemPaddingBottom="8dp"
