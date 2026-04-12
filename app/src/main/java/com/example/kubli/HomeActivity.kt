@@ -14,6 +14,7 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+
         // RECEIVE & DISPLAY USERNAME
         val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
         val username = sharedPref.getString("CURRENT_USERNAME", "User") ?: "User"
@@ -21,34 +22,27 @@ class HomeActivity : AppCompatActivity() {
         val textGreeting = findViewById<TextView>(R.id.textGreeting)
         textGreeting.text = "Hi! $username"
 
-        // BOTTOM NAVIGATION LOGIC
+
+        // BOTTOM NAVIGATION
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNav.selectedItemId = R.id.nav_home
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> true // Already on Home
-
+                R.id.nav_home -> true
                 R.id.nav_profile -> {
-                    val intent = Intent(this, UserProfileActivity::class.java)
-                    startActivity(intent)
-                    overridePendingTransition(0, 0) // Disables animation for a seamless tab switch
-                    finish() // Closes Home so you don't stack endless pages
+                    Toast.makeText(this, "Opening Profile...", Toast.LENGTH_SHORT).show()
                     true
                 }
-
                 R.id.nav_settings -> {
-                    val intent = Intent(this, SettingsActivity::class.java)
-                    startActivity(intent)
-                    overridePendingTransition(0, 0) // Disables animation
-                    finish()
+                    Toast.makeText(this, "Opening Settings...", Toast.LENGTH_SHORT).show()
                     true
                 }
                 else -> false
             }
         }
 
-        // HANDLE CARD CLICKS
+       //HANDLE CARD CLICKS
 
         // Encode Card Click -> Opens Encodemessage Activity
         findViewById<android.view.View>(R.id.cardEncode).setOnClickListener {

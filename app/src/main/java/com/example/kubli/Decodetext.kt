@@ -10,6 +10,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
+import androidx.lifecycle.lifecycleScope
+import com.example.kubli.backend.SteganographyAPI
+import kotlinx.coroutines.launch
 
 class Decodetext : AppCompatActivity() {
 
@@ -24,16 +27,44 @@ class Decodetext : AppCompatActivity() {
         val btnCopyText = findViewById<MaterialButton>(R.id.btnCopyText)
         val btnStartNewTask = findViewById<MaterialButton>(R.id.btnStartNewTask)
 
-        //Receive data from previous activity
+        // Receive data from previous activity
         val decodeText = intent.getStringExtra("TEXT_TO_DECODE")
+        val passwordInput = intent.getStringExtra("PASSWORD") ?: ""
+        val password = passwordInput.ifEmpty { "demo1234" }
+
+        val api = try {
+            SteganographyAPI(this)
+        } catch (e: Exception) {
+            txtDecodedMessage.text = "Init failed: ${e.message}"
+            return
+        }
+
         if (decodeText != null) {
             txtInputMessage.text = decodeText
 
-            // decryption algorithm on 'decodeText'
-            // placeholder for extracted text:
-            txtDecodedMessage.text = "This is the secret message successfully extracted from your text!"
+            lifecycleScope.launch {
+                try {
+                    val api = SteganographyAPI(this@Decodetext)
+
+                    val result = api.decrypt(
+                        stegoText = decodeText,
+                        password = password
+                    )
+
+                    txtDecodedMessage.text = if (result.success) {
+                        result.message ?: "Decoded, but message is empty."
+                    } else {
+                        "Decoding failed: ${result.error ?: "Unknown error"}"
+                    }
+
+                } catch (e: Exception) {
+                    txtDecodedMessage.text = "Crash prevented: ${e.localizedMessage}"
+                }
+            }
+
         } else {
             txtInputMessage.text = "Error: No text received."
+            txtDecodedMessage.text = ""
         }
 
         // Back Button Logic

@@ -90,16 +90,13 @@ class Encodemessage : AppCompatActivity() {
             }
             // Scenario 2: User uploaded an Image AND entered Text
             else if (hasImage && hasText) {
-                Toast.makeText(this, "Encoding text into image...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Encoding image with hidden text...", Toast.LENGTH_SHORT).show()
 
-                // Create Intent to go to Encodeimage activity
+                // Pass everything to Encodeimage activity
                 val intent = Intent(this, Encodeimage::class.java)
-
-                // Pass all three pieces of data
                 intent.putExtra("IMAGE_URI", selectedImageUri.toString())
                 intent.putExtra("ORIGINAL_TEXT", message)
                 intent.putExtra("PASSWORD", password)
-
                 startActivity(intent)
             }
             // Scenario 3: User ONLY entered Text (No image uploaded)

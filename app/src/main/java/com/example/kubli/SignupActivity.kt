@@ -56,10 +56,11 @@ class SignupActivity : AppCompatActivity() {
 
                     Toast.makeText(this@SignupActivity, "Account Created!", Toast.LENGTH_SHORT).show()
 
-                    //UPDATED: Redirect directly to Gettingstarted for new users
-                    val intent = Intent(this@SignupActivity, GettingStartedActivity::class.java)
+                    // Redirect to Login with NEW USER flag
+                    val intent = Intent(this@SignupActivity, SigninActivity::class.java)
+                    intent.putExtra("IS_NEW_USER", true) // <--- FLAG ADDED HERE
                     startActivity(intent)
-                    finish() // Close SignupActivity
+                    finish()
                 }
             }
         }
