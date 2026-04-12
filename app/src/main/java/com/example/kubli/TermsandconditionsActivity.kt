@@ -39,12 +39,12 @@ class TermsandconditionsActivity : AppCompatActivity() {
         btnDownload = findViewById(R.id.btnDownloadPdf)
 
         // Load Initial Text
-        updateUI()
+        //updateUI()
 
         // Language Toggle
         btnLanguage.setOnClickListener {
             isEnglish = !isEnglish
-            updateUI()
+            //updateUI()
         }
 
         // Download PDF Placeholder
@@ -66,8 +66,9 @@ class TermsandconditionsActivity : AppCompatActivity() {
             finish()
         }
     }
+}
 
-    private fun updateUI() {
+    /*private fun updateUI() {
         if (isEnglish) {
             btnLanguage.text = "English"
             textIntro.text = getString(R.string.terms_intro_english)
@@ -86,4 +87,4 @@ class TermsandconditionsActivity : AppCompatActivity() {
             textDecline.text = getString(R.string.btn_decline_tagalog)
         }
     }
-}
+}*/
