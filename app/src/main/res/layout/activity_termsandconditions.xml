@@ -149,7 +149,6 @@
                 android:id="@+id/textTermsBody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/terms_body_english"
                 android:textSize="14sp"
                 android:textColor="#374151"
                 android:lineSpacingExtra="6dp"
