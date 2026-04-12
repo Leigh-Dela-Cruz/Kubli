@@ -1,10 +1,225 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".TermsandconditionsActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="24dp"
+        android:paddingBottom="16dp"
+        android:background="@color/white"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tagVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="v1.0"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:background="@drawable/bg_rounded_border"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Terms &amp; Conditions"
+            android:textColor="#111827"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@+id/tagVersion"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/dateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Effective Date: 23 Feb 2026"
+            android:textColor="#6B7280"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@+id/titleText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="English"
+            android:textSize="13dp"
+            android:textAllCaps="false"
+            android:layout_marginTop="16dp"
+            app:icon="@drawable/ic_arrow_down"
+            app:iconSize="10dp"
+            app:iconGravity="textEnd"
+            app:iconPadding="10dp"
+            app:cornerRadius="10dp"
+            app:backgroundTint="#8A3FFC"
+            app:layout_constraintTop_toBottomOf="@+id/dateText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/btnDownloadPdf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/btnLanguage"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_download"
+                app:tint="#8A3FFC"
+                android:layout_marginEnd="6dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Download As PDF"
+                android:textColor="#8A3FFC"
+                android:textStyle="bold"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#E5E7EB"
+        app:layout_constraintTop_toBottomOf="@+id/headerLayout" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#F9FAFB"
+        app:layout_constraintTop_toBottomOf="@+id/divider"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:id="@+id/textIntro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Welcome to Kubli. By using our mobile application, you agree to the following terms. Please read them carefully to understand how the app operates regarding your privacy and data."
+                android:textSize="13sp"
+                android:textColor="#4B5563"
+                android:lineSpacingExtra="4dp"
+                android:gravity="center"
+                android:layout_marginBottom="24dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E5E7EB"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:id="@+id/textTermsBody"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/terms_body_english"
+                android:textSize="14sp"
+                android:textColor="#374151"
+                android:lineSpacingExtra="6dp"
+                tools:text="1. Nature of Service\n\nKubli is a mobile application designed for steganography, allowing users to hide text data within image files. The application is currently developed for Android devices.\n\n\n2. Offline-First &amp; Local Storage\n\n- Offline Functionality: Kubli is designed to work entirely offline. It does not require an internet connection to encode or decode messages.\n\n- Local Processing: All image processing, encryption, and embedding occur locally on your device.\n\n- Local Saving: Encoded images are saved directly to your device’s internal storage or gallery. Kubli does not provide cloud storage or backup services.\n\n\n3. Data Privacy &amp; Non-Disclosure\n\n- No Data Collection: We do not collect, store, or transmit your images, cleartext messages, or passphrases to any external servers or third-party platforms.\n\n- User Responsibility: Because Kubli does not store your data on a server, we cannot recover lost passphrases or original images if they are deleted from your device. You are solely responsible for managing your hidden data and keys.\n\n\n4. User Conduct and Legal Use\n\n- You agree to use Kubli only for lawful purposes. You are prohibited from using this application to:\n\n- Store or transmit illegal, copyrighted, or harmful material.\n\n- Engage in any activity that violates local or international laws.\n\n- The Kubli development team are not responsible for how users choose to use the steganography features provided by the app.\n\n\n5. Security Disclaimer\n\n- While Kubli uses encryption and steganography to protect data, no method is 100% secure. By using this app, you acknowledge that you understand the risks associated with digital data security.\n\n\n6. Limitation of Liability\n\n- Kubli is provided 'as-is' without any warranties. We are not liable for:\n\n- Any loss of data or images.\n\n- Damage to your device.\n\n- Failure to decrypt or decode a message if a passphrase is forgotten or if an image has been altered by lossy compression (e.g., sharing via social media apps that compress images).\n\n\n7. Changes to Terms\n\n- We reserve the right to update these terms as the app evolves (e.g., adding new platforms or features). Continued use of the app constitutes acceptance of the updated terms." />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/decisionCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#D1D5DB"
+                app:cardBackgroundColor="#E5E7EB"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:id="@+id/textReadyTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ready to start?"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#1F2937" />
+
+                    <TextView
+                        android:id="@+id/textReadyDesc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="By clicking 'Accept', you agree to our full Privacy Policy and Terms of Service."
+                        android:gravity="center"
+                        android:textSize="12sp"
+                        android:textColor="#6B7280"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="24dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAccept"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="Accept &amp; Use App"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="false"
+                        app:backgroundTint="#8A3FFC"
+                        app:cornerRadius="12dp" />
+
+                    <TextView
+                        android:id="@+id/textDecline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Review &amp; Decline"
+                        android:textColor="#4B5563"
+                        android:textSize="13sp"
+                        android:layout_marginTop="16dp"
+                        android:clickable="true"
+                        android:focusable="true"/>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

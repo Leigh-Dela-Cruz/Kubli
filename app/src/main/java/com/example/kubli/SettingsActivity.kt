@@ -1,4 +1,4 @@
-package com.example.kubli // Make sure this matches your package name
+package com.example.kubli
 
 import android.content.Intent
 import android.os.Bundle
@@ -50,12 +50,16 @@ class SettingsActivity : AppCompatActivity() {
             // Future implementation: Actually switch the app theme here
         }
 
+        //Removed the double nested listeners here
         rowTerms.setOnClickListener {
-            Toast.makeText(this, "Terms of Service clicked", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, TermsandconditionsActivity::class.java)
+            startActivity(intent)
         }
 
+        //Removed the double nested listeners here
         rowPrivacy.setOnClickListener {
-            Toast.makeText(this, "Privacy Policy clicked", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, PrivacyPolicyActivity::class.java)
+            startActivity(intent)
         }
 
         rowVersion.setOnClickListener {
