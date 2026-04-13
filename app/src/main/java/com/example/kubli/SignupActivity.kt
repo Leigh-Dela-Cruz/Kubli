@@ -1,5 +1,6 @@
 package com.example.kubli
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -56,10 +57,20 @@ class SignupActivity : AppCompatActivity() {
 
                     Toast.makeText(this@SignupActivity, "Account Created!", Toast.LENGTH_SHORT).show()
 
-                    //UPDATED: Redirect directly to Gettingstarted for new users
+                    // bug1 fix: save sessions:
+                    val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
+                    with(sharedPref.edit()) {
+                        putString("CURRENT_USERNAME", name)
+                        putString("USER_NAME", name)
+                        putString("USER_EMAIL", email)
+                        putBoolean("IS_LOGGED_IN", true)
+                        commit() // Force instant save
+                    }
+
+                    // Redirect directly to GettingStarted for new users
                     val intent = Intent(this@SignupActivity, GettingStartedActivity::class.java)
                     startActivity(intent)
-                    finish() // Close SignupActivity
+                    finish()
                 }
             }
         }

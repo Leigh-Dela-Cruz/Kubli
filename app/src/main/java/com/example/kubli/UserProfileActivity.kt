@@ -56,10 +56,11 @@ class UserProfileActivity : AppCompatActivity() {
 
         // Navigate to Login/Signup on Log out
         btnLogout.setOnClickListener {
-            // Optional: Clear session data upon logout
-            // sharedPref.edit().clear().apply()
-
+            // FIX: Clear the session data
+            val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
+            sharedPref.edit().clear().apply()
             val intent = Intent(this, LoginsignupActivity::class.java)
+
             // Clear the back stack so user can't press back to return to profile
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
