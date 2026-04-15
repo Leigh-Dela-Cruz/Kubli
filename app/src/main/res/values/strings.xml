@@ -13,7 +13,7 @@
     <string name="policy_body_english">
         <![CDATA[
         <b>1. Data Collection</b><br/>
-        Kubli is designed as a completely offline application. We do not collect, store, or transmit your personal images or text messages to external servers. All data processing—including account credentials and message hiding—occurs locally within your device’s internal memory and local storage, ensuring that no sensitive information is ever processed in "plain sight" or accessible to other users.<br/><br/>
+        Kubli is designed as a completely offline application. We do not collect, store, or transmit your personal images or text messages to external servers. All data processing—including account credentials and message hiding—occurs locally within your device internal memory and local storage, ensuring that no sensitive information is ever processed in "plain sight" or accessible to other users.<br/><br/>
 
         <b>2. Dual-Engine Security</b><br/>
         Our system utilizes two specialized engines to protect your information. For images, the app modifies the Least Significant Bits (LSB) to hide data mathematically. For text, we utilize a unique Linguistic Steganography engine that generates natural-sounding Filipino and Taglish sentences using Markov Chains and N-gram models. This ensures your hidden data blends seamlessly into local cultural contexts, making it virtually undetectable to outside observers.<br/><br/>
@@ -56,5 +56,51 @@
     <string name="ready_desc_tagalog">Sa pag-click ng "Tanggapin", sumasang-ayon ka sa aming buong Privacy Policy at Mga Tuntunin ng Serbisyo.</string>
     <string name="btn_accept_tagalog">Tanggapin at Gamitin</string>
     <string name="btn_decline_tagalog">Suriin at Tanggihan</string>
+
+    <string name="terms_intro_english">Welcome to Kubli. By using our mobile application, you agree to the following terms. Please read them carefully to understand how the app operates regarding your privacy and data.</string>
+    <string name="terms_ready_desc_english">By clicking \'Accept\', you agree to our full Terms and Conditions.</string>
+
+    <string name="terms_body_english">
+        <![CDATA[
+        <b>1. Nature of Service</b><br/>
+        Kubli is a mobile application designed for steganography, allowing users to hide text data within image files. The application is currently developed for Android devices.<br/><br/>
+
+        <b>2. Offline-First &amp; Local Storage</b><br/>
+        - Offline Functionality: Kubli is designed to work entirely offline. It does not require an internet connection to encode or decode messages.<br/>
+        - Local Processing: All image processing, encryption, and embedding occur locally on your device.<br/>
+        - Local Saving: Encoded images are saved directly to your device internal storage or gallery. Kubli does not provide cloud storage or backup services.<br/><br/>
+
+        <b>3. Data Privacy &amp; Non-Disclosure</b><br/>
+        - No Data Collection: We do not collect, store, or transmit your images, cleartext messages, or passphrases to any external servers or third-party platforms.<br/>
+        - User Responsibility: Because Kubli does not store your data on a server, we cannot recover lost passphrases or original images if they are deleted from your device. You are solely responsible for managing your hidden data and keys.<br/><br/>
+
+        <b>4. User Conduct and Legal Use</b><br/>
+        You agree to use Kubli only for lawful purposes. You are prohibited from using this application to:<br/>
+        - Store or transmit illegal, copyrighted, or harmful material.<br/>
+        - Engage in any activity that violates local or international laws.<br/><br/>
+        The Kubli development team are not responsible for how users choose to use the steganography features provided by the app.<br/><br/>
+
+        <b>5. Security Disclaimer</b><br/>
+        While Kubli uses encryption and steganography to protect data, no method is 100% secure. By using this app, you acknowledge that you understand the risks associated with digital data security.<br/><br/>
+
+        <b>6. Limitation of Liability</b><br/>
+        Kubli is provided "as-is" without any warranties. We are not liable for:<br/>
+        - Any loss of data or images.<br/>
+        - Damage to your device.<br/>
+        - Failure to decrypt or decode a message if a passphrase is forgotten or if an image has been altered by lossy compression (e.g., sharing via social media apps that compress images).<br/><br/>
+
+        <b>7. Changes to Terms</b><br/>
+        We reserve the right to update these terms as the app evolves (e.g., adding new platforms or features). Continued use of the app constitutes acceptance of the updated terms.
+        ]]>
+    </string>
+
+    <string name="terms_intro_tagalog">Maligayang pagdating sa Kubli...</string>
+    <string name="terms_ready_desc_tagalog">Sa pag-click ng \'Accept\', sumasang-ayon ka sa aming Mga Tuntunin at Kundisyon.</string>
+    <string name="terms_body_tagalog">
+        <![CDATA[
+        <b>1. Uri ng Serbisyo</b><br/>
+        (Add your Tagalog translation here...)
+        ]]>
+    </string>
 
 </resources>

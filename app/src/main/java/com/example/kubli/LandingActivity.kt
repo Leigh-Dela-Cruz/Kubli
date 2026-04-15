@@ -12,8 +12,9 @@ class LandingActivity : AppCompatActivity() {
 
         val btnGetStarted = findViewById<Button>(R.id.btnGetStarted)
 
+        //Navigate to Home Activity/dashboard
         btnGetStarted.setOnClickListener {
-            val intent = Intent(this, LoginsignupActivity::class.java)
+            val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
 
 

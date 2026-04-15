@@ -69,7 +69,8 @@ class UserProfileActivity : AppCompatActivity() {
 
         // Change Password Placeholder
         cardChangePassword.setOnClickListener {
-            Toast.makeText(this, "Change Password clicked", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, UpdatePasswordActivity::class.java)
+            startActivity(intent)
         }
 
         // BOTTOM NAVIGATION

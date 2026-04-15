@@ -22,15 +22,25 @@ class PrivacyCheckActivity : AppCompatActivity() {
     private lateinit var checkPrivacy: CheckBox
     private lateinit var checkTerms: CheckBox
 
-    // LAUNCHER: Listens for the "OK" signal from Privacy Policy
+    //Listens for the "OK" signal from Privacy Policy
     private val privacyLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // Check the box automatically!
-            checkPrivacy.isChecked = true
+            checkPrivacy.isChecked = true // Checks the Privacy box
             updateButtonState()
             Toast.makeText(this, "Privacy Policy Accepted", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    //Listens for the "OK" signal from Terms & Conditions
+    private val termsLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            checkTerms.isChecked = true // Checks the Terms box
+            updateButtonState()
+            Toast.makeText(this, "Terms & Conditions Accepted", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -42,18 +52,19 @@ class PrivacyCheckActivity : AppCompatActivity() {
         checkPrivacy = findViewById(R.id.checkPrivacy)
         checkTerms = findViewById(R.id.checkTerms)
 
-        //Setup Privacy Link
+        // Setup Privacy Link
         setupLink(checkPrivacy, "I agree to Privacy Policy", "Privacy Policy") {
             val intent = Intent(this, PrivacyPolicyActivity::class.java)
-            privacyLauncher.launch(intent)
+            privacyLauncher.launch(intent) // Uses Launcher 1
         }
 
-        //Setup Terms Link
+        // Setup Terms Link
         setupLink(checkTerms, "I agree to Terms & Conditions", "Terms & Conditions") {
-            Toast.makeText(this, "Opening Terms...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, TermsAndConditionsActivity::class.java)
+            termsLauncher.launch(intent) // Uses Launcher 2
         }
 
-        //Button Validation Init
+        // Button Validation Init
         btnContinue.isEnabled = false
         btnContinue.alpha = 0.5f
 
@@ -63,8 +74,8 @@ class PrivacyCheckActivity : AppCompatActivity() {
         // CONTINUE BUTTON ACTION
         btnContinue.setOnClickListener {
             if (checkPrivacy.isChecked && checkTerms.isChecked) {
-                // Navigate to Home Dashboard
-                val intent = Intent(this, HomeActivity::class.java)
+                // Navigate to Landing Activity
+                val intent = Intent(this, LandingActivity::class.java)
                 startActivity(intent)
                 finish() // Prevents user from going back to this screen
             }

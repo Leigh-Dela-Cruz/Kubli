@@ -47,15 +47,17 @@ class SettingsActivity : AppCompatActivity() {
         switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
             val status = if (isChecked) "enabled" else "disabled"
             Toast.makeText(this, "Dark Mode $status", Toast.LENGTH_SHORT).show()
-            // Future implementation: Actually switch the app theme here
+            //TODO: Actually switch the app theme here
         }
 
         rowTerms.setOnClickListener {
-            Toast.makeText(this, "Terms of Service clicked", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, TermsAndConditionsActivity::class.java)
+            startActivity(intent)
         }
 
         rowPrivacy.setOnClickListener {
-            Toast.makeText(this, "Privacy Policy clicked", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, PrivacyPolicyActivity::class.java)
+            startActivity(intent)
         }
 
         rowVersion.setOnClickListener {

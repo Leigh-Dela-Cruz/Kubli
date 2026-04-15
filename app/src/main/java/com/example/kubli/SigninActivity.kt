@@ -30,7 +30,8 @@ class SigninActivity : AppCompatActivity() {
         val textForgot = findViewById<TextView>(R.id.textForgotPassword)
         textForgot.paintFlags = textForgot.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         textForgot.setOnClickListener {
-            Toast.makeText(this, "Forgot Password Clicked", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, UpdatePasswordActivity::class.java)
+            startActivity(intent)
         }
 
         // Sign In Button
