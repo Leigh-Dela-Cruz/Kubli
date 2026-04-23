@@ -31,9 +31,13 @@ class Encodetext : AppCompatActivity() {
 
         //Receive data from previous activity
         // We get the string we sent using the key "ORIGINAL_TEXT"
-        val originalMessage = intent.getStringExtra("ORIGINAL_TEXT") ?: ""
+        val originalMessage = (intent.getStringExtra("ORIGINAL_TEXT") ?: "").take(350)
 
         txtOriginal.text = originalMessage
+
+        // Character counter HERE BUG #6
+        // val charCounter = findViewById<TextView>("placeholder for id") put counter in xml file
+       // charCounter.text = "${originalMessage.length}/350"
 
         lifecycleScope.launch {
             val secret = originalMessage.takeIf { it.isNotBlank() } ?: "Test message"

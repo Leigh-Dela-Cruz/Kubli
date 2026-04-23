@@ -42,6 +42,24 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // 📧 Validate email format
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // 🔐 Validate password strength
+            val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")
+
+            if (!passwordPattern.matches(password)) {
+                Toast.makeText(
+                    this,
+                    "Password must be at least 8 characters and include uppercase, lowercase, and a number",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
+
             // Database Operations
             lifecycleScope.launch {
                 val db = AppDatabase.getDatabase(applicationContext)

@@ -80,7 +80,17 @@ class Encodemessage : AppCompatActivity() {
         // Hide Message Button
         btnHide.setOnClickListener {
             val message = inputText.text.toString().trim()
+            // 350 characters limit for text input
+            if (message.length > 350) {
+                Toast.makeText(this, "Text must not exceed 350 characters.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val password = inputPassword.text.toString().trim() // Grab the password text
+            // Requires the passphrase to be 8 characters only
+            if (password.length != 8) {
+                Toast.makeText(this, "Enter only 8 characters for the passphrase", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val hasImage = selectedImageUri != null
             val hasText = message.isNotEmpty()
 
