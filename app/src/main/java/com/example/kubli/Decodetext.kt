@@ -42,6 +42,15 @@ class Decodetext : AppCompatActivity() {
         if (decodeText != null) {
             txtInputMessage.text = decodeText
 
+            // Check if zero-width characters still exist
+            val stegoCount = decodeText.count { it == '\u200B' || it == '\u200C' }
+
+            if (stegoCount == 0) { // threshold (adjust if needed)
+                Toast.makeText(this, "Hidden data lost during transfer", Toast.LENGTH_LONG).show()
+                txtDecodedMessage.text = "Error: Hidden data missing or corrupted."
+                return
+            }
+
             lifecycleScope.launch {
                 try {
                     val api = SteganographyAPI(this@Decodetext)
