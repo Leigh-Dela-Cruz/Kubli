@@ -87,10 +87,11 @@ class Encodemessage : AppCompatActivity() {
             }
             val password = inputPassword.text.toString().trim() // Grab the password text
             // Requires the passphrase to be 8 characters only
-            if (password.length != 8) {
-                Toast.makeText(this, "Enter only 8 characters for the passphrase", Toast.LENGTH_SHORT).show()
+            if (password.isNotEmpty() && password.length != 8) {
+                Toast.makeText(this, "Passphrase must be exactly 8 characters.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
             val hasImage = selectedImageUri != null
             val hasText = message.isNotEmpty()
 
