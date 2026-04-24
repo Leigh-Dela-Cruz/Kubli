@@ -18,6 +18,16 @@
         android:elevation="4dp"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_back"
+            android:padding="16dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <TextView
             android:id="@+id/tagVersion"
             android:layout_width="wrap_content"
@@ -149,10 +159,10 @@
                 android:id="@+id/textTermsBody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:lineSpacingExtra="6dp"
                 android:text="@string/terms_body_english"
-                android:textSize="14sp"
                 android:textColor="#374151"
-                android:lineSpacingExtra="6dp" />
+                android:textSize="14sp" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/decisionCard"

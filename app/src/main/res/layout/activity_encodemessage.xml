@@ -9,13 +9,14 @@
     tools:context=".Encodemessage">
 
     <ImageView
-        android:id="@+id/btnMenu"
+        android:id="@+id/btnBack"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:src="@drawable/ic_menu"
+        android:src="@drawable/ic_arrow_back"
+        app:tint="#8A3FFC"
+        android:padding="4dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        app:tint="#8A3FFC"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -27,8 +28,8 @@
         android:textColor="#8A3FFC"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="@+id/btnMenu"
-        app:layout_constraintBottom_toBottomOf="@+id/btnMenu"
+        app:layout_constraintTop_toTopOf="@+id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBack"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -39,8 +40,8 @@
         android:src="@drawable/ic_kubli_logo_purple"
         android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnMenu"
-        app:layout_constraintBottom_toBottomOf="@+id/btnMenu" />
+        app:layout_constraintTop_toTopOf="@+id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@+id/btnBack" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/containerUpload"
@@ -143,6 +144,18 @@
                 android:hint="Enter text to hide..."
                 android:gravity="top|start"
                 android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvCharCounter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="end"
+                android:text="0/350"
+                android:textColor="#9CA3AF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

@@ -14,7 +14,8 @@
         android:layout_height="32dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        android:src="@drawable/ic_menu"
+        android:src="@drawable/ic_arrow_back"
+        android:padding="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#8A3FFC" />

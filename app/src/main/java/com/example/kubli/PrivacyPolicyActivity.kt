@@ -4,6 +4,8 @@ import android.app.Activity
 import android.graphics.Paint
 import android.os.Bundle
 import android.text.Html
+import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -29,6 +31,7 @@ class PrivacyPolicyActivity : AppCompatActivity() {
         setContentView(R.layout.activity_privacy_policy)
 
         //Initialize Views
+        val btnBack = findViewById<ImageView>(R.id.btnBack)
         btnLanguage = findViewById(R.id.btnLanguage)
         textIntro = findViewById(R.id.textIntro)
         textPolicyBody = findViewById(R.id.textPolicyBody)
@@ -38,8 +41,27 @@ class PrivacyPolicyActivity : AppCompatActivity() {
         textDecline = findViewById(R.id.textDecline)
         btnDownload = findViewById(R.id.btnDownloadPdf)
 
+        // Check if from the Settings screen
+        val isFromSettings = intent.getBooleanExtra("IS_FROM_SETTINGS", false)
+
+        if (isFromSettings) {
+            // Hide the buttons and the "Ready?" text completely
+            btnAccept.visibility = View.GONE
+            textDecline.visibility = View.GONE
+            textReadyTitle.visibility = View.GONE
+            textReadyDesc.visibility = View.GONE
+
+            // SHOW the back button!
+            btnBack.visibility = View.VISIBLE
+        }
+
         //Load Initial Text
         updateUI()
+
+        // Handle Back Button
+        btnBack.setOnClickListener {
+            finish()
+        }
 
         //Language Toggle
         btnLanguage.setOnClickListener {
@@ -63,7 +85,7 @@ class PrivacyPolicyActivity : AppCompatActivity() {
         btnAccept.setOnClickListener {
             // Send "OK" signal back to PrivacyCheckActivity
             setResult(Activity.RESULT_OK)
-            finish() // Close this screen
+            finish()
         }
     }
 

@@ -1,4 +1,4 @@
-package com.example.kubli // Make sure this matches your package name
+package com.example.kubli
 
 import android.content.Intent
 import android.os.Bundle
@@ -19,9 +19,6 @@ class SettingsActivity : AppCompatActivity() {
         val btnBack = findViewById<ImageView>(R.id.btnBack)
 
         // Row Layouts
-        val rowNotifications = findViewById<RelativeLayout>(R.id.rowNotifications)
-        val rowLinkedAccounts = findViewById<RelativeLayout>(R.id.rowLinkedAccounts)
-        val switchDarkMode = findViewById<SwitchMaterial>(R.id.switchDarkMode)
         val rowTerms = findViewById<RelativeLayout>(R.id.rowTerms)
         val rowPrivacy = findViewById<RelativeLayout>(R.id.rowPrivacy)
         val rowVersion = findViewById<RelativeLayout>(R.id.rowVersion)
@@ -35,28 +32,15 @@ class SettingsActivity : AppCompatActivity() {
             finish()
         }
 
-        // Click Listeners (Placeholders for now)
-        rowNotifications.setOnClickListener {
-            Toast.makeText(this, "Notification Preferences clicked", Toast.LENGTH_SHORT).show()
-        }
-
-        rowLinkedAccounts.setOnClickListener {
-            Toast.makeText(this, "Linked Accounts clicked", Toast.LENGTH_SHORT).show()
-        }
-
-        switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
-            val status = if (isChecked) "enabled" else "disabled"
-            Toast.makeText(this, "Dark Mode $status", Toast.LENGTH_SHORT).show()
-            //TODO: Actually switch the app theme here
-        }
-
         rowTerms.setOnClickListener {
             val intent = Intent(this, TermsAndConditionsActivity::class.java)
+            intent.putExtra("IS_FROM_SETTINGS", true)
             startActivity(intent)
         }
 
         rowPrivacy.setOnClickListener {
             val intent = Intent(this, PrivacyPolicyActivity::class.java)
+            intent.putExtra("IS_FROM_SETTINGS", true)
             startActivity(intent)
         }
 

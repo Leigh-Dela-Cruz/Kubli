@@ -4,6 +4,8 @@ import android.app.Activity
 import android.graphics.Paint
 import android.os.Bundle
 import android.text.Html
+import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -26,10 +28,10 @@ class TermsAndConditionsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Ensure this matches your XML file name perfectly!
         setContentView(R.layout.activity_termsandconditions)
 
         // Initialize Views
+        val btnBack = findViewById<ImageView>(R.id.btnBack)
         btnLanguage = findViewById(R.id.btnLanguage)
         textIntro = findViewById(R.id.textIntro)
         textTermsBody = findViewById(R.id.textTermsBody)
@@ -39,8 +41,28 @@ class TermsAndConditionsActivity : AppCompatActivity() {
         textDecline = findViewById(R.id.textDecline)
         btnDownload = findViewById(R.id.btnDownloadPdf)
 
+
+        // Check if from the Settings screen
+        val isFromSettings = intent.getBooleanExtra("IS_FROM_SETTINGS", false)
+
+        if (isFromSettings) {
+            // Hide the buttons and the "Ready?" text completely
+            btnAccept.visibility = View.GONE
+            textDecline.visibility = View.GONE
+            textReadyTitle.visibility = View.GONE
+            textReadyDesc.visibility = View.GONE
+
+            // SHOW the back button!
+            btnBack.visibility = View.VISIBLE
+        }
+
         // Load Initial Text
         updateUI()
+
+        // Handle Back Button
+        btnBack.setOnClickListener {
+            finish()
+        }
 
         // Language Toggle
         btnLanguage.setOnClickListener {
@@ -64,7 +86,7 @@ class TermsAndConditionsActivity : AppCompatActivity() {
         btnAccept.setOnClickListener {
             // Send "OK" signal back to whoever opened this activity
             setResult(Activity.RESULT_OK)
-            finish() // Close this screen
+            finish()
         }
     }
 

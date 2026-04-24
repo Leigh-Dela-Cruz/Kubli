@@ -13,6 +13,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import android.text.Editable
+import android.text.TextWatcher
+import android.graphics.Color
 
 class Encodemessage : AppCompatActivity() {
 
@@ -46,16 +49,40 @@ class Encodemessage : AppCompatActivity() {
         imgPreview = findViewById(R.id.imgPreview)
         val uploadArea = findViewById<LinearLayout>(R.id.layoutUploadClick)
         val btnHide = findViewById<Button>(R.id.btnHideMessage)
-        val btnMenu = findViewById<ImageView>(R.id.btnMenu)
+        val btnBack = findViewById<ImageView>(R.id.btnBack)
         val inputText = findViewById<EditText>(R.id.inputText)
+
+        //Grab the counter text view
+        val tvCharCounter = findViewById<TextView>(R.id.tvCharCounter)
 
         // VIEWS FOR ENCRYPTION KEY
         val btnInfo = findViewById<ImageView>(R.id.btnInfo)
         val textInfoDesc = findViewById<TextView>(R.id.textInfoDesc)
         val inputPassword = findViewById<EditText>(R.id.inputPassword)
 
+        //LIVE CHARACTER COUNTER LOGIC
+        inputText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                // Get the current length of whatever is typed
+                val currentLength = s?.length ?: 0
+
+                // Update the numbers on the screen
+                tvCharCounter.text = "$currentLength/350"
+
+                //Shows error if text is over 350 characters
+                if (currentLength > 350) {
+                    tvCharCounter.setTextColor(Color.RED)
+                } else {
+                    tvCharCounter.setTextColor(Color.parseColor("#9CA3AF"))
+                }
+            }
+        })
+
         // Back Button
-        btnMenu.setOnClickListener {
+        btnBack.setOnClickListener {
             finish()
         }
 
