@@ -41,10 +41,10 @@ class SigninActivity : AppCompatActivity() {
             val emailLayout = findViewById<TextInputLayout>(R.id.inputUser)
             val passLayout = findViewById<TextInputLayout>(R.id.inputPassword)
 
-            val email = emailLayout.editText?.text.toString().trim()
+            val input = emailLayout.editText?.text.toString().trim()
             val password = passLayout.editText?.text.toString().trim()
 
-            if (email.isEmpty() || password.isEmpty()) {
+            if (input.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter credentials", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -52,7 +52,8 @@ class SigninActivity : AppCompatActivity() {
             // Database Verification
             lifecycleScope.launch {
                 val db = AppDatabase.getDatabase(applicationContext)
-                val user = db.userDao().getUserByEmail(email)
+                val user = db.userDao().getUserByEmail(input.lowercase())
+                    ?: db.userDao().getUserByName(input)
 
                 if (user != null) {
                     val inputHash = hashPassword(password)

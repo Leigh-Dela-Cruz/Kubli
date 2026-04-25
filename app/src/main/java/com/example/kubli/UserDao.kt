@@ -15,4 +15,7 @@ interface UserDao {
 
     @Update
     suspend fun updateUser(user: User)
+
+    @Query("SELECT * FROM users WHERE fullName = :name LIMIT 1")
+    suspend fun getUserByName(name: String): User?
 }

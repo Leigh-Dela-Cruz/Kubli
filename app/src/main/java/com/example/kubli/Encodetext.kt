@@ -35,9 +35,10 @@ class Encodetext : AppCompatActivity() {
 
         txtOriginal.text = originalMessage
 
-        // Character counter HERE BUG #6
-        // val charCounter = findViewById<TextView>("placeholder for id") put counter in xml file
-       // charCounter.text = "${originalMessage.length}/350"
+        // Character counter
+        //val length = originalMessage.length.coerceAtMost(350)
+        //val charCounter = findViewById<TextView>(R.id.tvCharCounter)
+        //charCounter.text = "$length/350"
 
         lifecycleScope.launch {
             val secret = originalMessage.takeIf { it.isNotBlank() } ?: "Test message"

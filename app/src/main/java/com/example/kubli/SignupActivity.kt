@@ -34,7 +34,7 @@ class SignupActivity : AppCompatActivity() {
             val passLayout = findViewById<TextInputLayout>(R.id.inputPassword)
 
             val name = nameLayout.editText?.text.toString().trim()
-            val email = emailLayout.editText?.text.toString().trim()
+            val email = emailLayout.editText?.text.toString().trim().lowercase()
             val password = passLayout.editText?.text.toString().trim()
 
             if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
@@ -42,13 +42,13 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // 📧 Validate email format
+            // Validate email format
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // 🔐 Validate password strength
+            // Validate password strength
             val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")
 
             if (!passwordPattern.matches(password)) {
