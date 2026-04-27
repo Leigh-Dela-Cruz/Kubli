@@ -37,16 +37,16 @@ class SteganographyAPI(
                 else -> {
                     // Try to hide the message using the engine.
                     val result = engine.encrypt(secret, password)
-                    if (result.success) {
-                        // If it worked, return the hidden text and some details.
+                    if (result.success && !result.data.isNullOrBlank()) {
                         EncryptResult(
-                            stegoText = result.data!!,
-                            visibleText = result.visible!!,
+                            stegoText = result.data,
+                            visibleText = result.visible ?: "",
                             algorithm = result.algorithm
                         )
                     } else {
-                        // If it failed, return the error message.
-                        EncryptResult(error = result.error ?: "Encryption failed")
+                        EncryptResult(
+                            error = result.error ?: "Encryption produced empty output"
+                        )
                     }
                 }
             }

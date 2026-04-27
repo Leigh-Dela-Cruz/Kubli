@@ -13,21 +13,23 @@ class SteganographyMain(
 ) {
     // The language model used to create text that looks natural.
     private val model = ViterbiModel(context, ngramOrder).apply { initialize() }
-    
+
     // This function hides a secret message inside a piece of generated text.
     fun encrypt(secret: String, passphrase: String, maxWords: Int = 15, seed: Long? = null): Result {
         // First, encrypt the secret message using the password for security.
         val encrypted = CryptoUtility.encrypt(secret, passphrase)
-        
+
         // Convert the encrypted data into a stream of bits.
         val bits = BitstreamUtility.createBitstream(encrypted, useHamming)
 
         // Generate a normal looking sentence to use as a cover for the secret message.
-        val cover = model.generateMarkov(maxWords, seed = System.currentTimeMillis())
-        
+        val cover = model.generateViterbi(seed = System.currentTimeMillis())
+        //val cover = model.generateMarkov(seed = System.currentTimeMillis())
+            //    .ifBlank { "hello world sample text" }
+
         // Hide the secret bits inside the cover sentence.
         val stego = ZeroSteganography.embed(cover, bits)
-        
+
         // Return the final result including the text with the hidden message.
         return Result(
             success = true,
@@ -37,25 +39,25 @@ class SteganographyMain(
             algorithm = if (useViterbi) "Viterbi" else "Markov"
         )
     }
-    
+
     // This function finds and retrieves a hidden secret from text.
     fun decrypt(stegoText: String, passphrase: String): Result {
         // 1. Check if the text actually contains any hidden data (Zero-width chars)
         if (!ZeroSteganography.hasHidden(stegoText)) {
             return Result(false, error = "This text does not contain a hidden message.")
         }
-        
+
         // 2. Extract the hidden bits from the text.
         val bits = ZeroSteganography.extract(stegoText)
-        
+
         // 3. Convert those bits back into encrypted data and fix any small errors.
         val (encrypted, errors) = BitstreamUtility.extractEncryptedData(bits, useHamming)
-        
+
         if (encrypted == null) {
             // This happens if Hamming decoding fails or the length header is missing/wrong.
             return Result(false, error = "The hidden message is incomplete or corrupted.")
         }
-        
+
         // 4. Try to decrypt the data using the password to get the original message back.
         return try {
             val message = CryptoUtility.decrypt(encrypted, passphrase)
@@ -68,10 +70,10 @@ class SteganographyMain(
             Result(false, error = "Decryption failed: ${e.localizedMessage}")
         }
     }
-    
+
     // Shut down the model to free up memory when it is no longer needed.
     fun close() = model.close()
-    
+
     // A class to hold the output of the encryption or decryption process.
     data class Result(
         val success: Boolean,
