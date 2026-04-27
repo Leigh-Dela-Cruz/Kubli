@@ -25,7 +25,6 @@ class Encodeimage : AppCompatActivity() {
     private lateinit var btnSaveImage: MaterialButton
     private lateinit var btnStartNewTask: MaterialButton
 
-
     private suspend fun saveImageToGallery(bitmap: android.graphics.Bitmap) {
         //Set up the metadata for the image
         val filename = "Kubli_Encoded_${System.currentTimeMillis()}.png"

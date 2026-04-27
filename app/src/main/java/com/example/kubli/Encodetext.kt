@@ -28,31 +28,37 @@ class Encodetext : AppCompatActivity() {
         val btnCopy = findViewById<MaterialButton>(R.id.btnCopyText)
         val btnStartNew = findViewById<MaterialButton>(R.id.btnStartNewTask)
         val api: SteganographyAPI = SteganographyAPI(applicationContext)
+        val btnRefresh = findViewById<MaterialButton>(R.id.btnRefresh)
+        val btnShare = findViewById<MaterialButton>(R.id.btnShare)
 
         //Receive data from previous activity
         // We get the string we sent using the key "ORIGINAL_TEXT"
         val originalMessage = (intent.getStringExtra("ORIGINAL_TEXT") ?: "").take(350)
-
         txtOriginal.text = originalMessage
+        val password = intent.getStringExtra("PASSWORD")?.takeIf { it.isNotBlank() } ?: "demo1234"
 
         // Character counter
         //val length = originalMessage.length.coerceAtMost(350)
         //val charCounter = findViewById<TextView>(R.id.tvCharCounter)
         //charCounter.text = "$length/350"
 
-        lifecycleScope.launch {
-            val secret = originalMessage.takeIf { it.isNotBlank() } ?: "Test message"
+        fun runEncryption() {
+            txtEncrypted.text = "Encoding text...please wait."
 
-            val password = intent.getStringExtra("PASSWORD")?.takeIf { it.isNotBlank() } ?: "demo1234"
+            lifecycleScope.launch {
+                val secret = originalMessage.takeIf { it.isNotBlank() } ?: "Test message"
 
-            val result: EncryptResult = try {
-                api.encrypt(secret = secret, password = password)
-            } catch (e: Exception) {
-                EncryptResult(error = "${e::class.simpleName}: ${e.message}")
+                val result: EncryptResult = try {
+                    api.encrypt(secret = secret, password = password)
+                } catch (e: Exception) {
+                    EncryptResult(error = "${e::class.simpleName}: ${e.message}")
+                }
+
+                txtEncrypted.text = result.stegoText ?: "Encryption failed: ${result.error ?: "unknown error"}"
             }
-
-            txtEncrypted.text = result.stegoText ?: "Encryption failed: ${result.error ?: "unknown error"}"
         }
+
+        runEncryption()
 
         // Back Button Logic
         btnBack.setOnClickListener {
@@ -63,6 +69,27 @@ class Encodetext : AppCompatActivity() {
         btnCopy.setOnClickListener {
             val textToCopy = txtEncrypted.text.toString()
             copyToClipboard(textToCopy)
+        }
+
+        // Refresh Button Logic
+        btnRefresh.setOnClickListener {
+            runEncryption()
+        }
+
+        // Share Button Logic
+        btnShare.setOnClickListener {
+            val textToShare = txtEncrypted.text.toString()
+
+            if (textToShare.isBlank() || textToShare.contains("please wait")) {
+                Toast.makeText(this, "Nothing to share...", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "text/plain"
+            shareIntent.putExtra(Intent.EXTRA_TEXT, textToShare)
+
+            startActivity(Intent.createChooser(shareIntent, "Share encrypted text via"))
         }
 
         // Start New Task Button Logic
