@@ -34,7 +34,10 @@ class SignupActivity : AppCompatActivity() {
             val passLayout = findViewById<TextInputLayout>(R.id.inputPassword)
 
             val name = nameLayout.editText?.text.toString().trim()
+
+            // FIXED: ensure consistent email format for login/signup matching
             val email = emailLayout.editText?.text.toString().trim().lowercase()
+
             val password = passLayout.editText?.text.toString().trim()
 
             if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
@@ -42,19 +45,42 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Validate email format
+            if (email.length > 150) {
+                Toast.makeText(this, "Email must not exceed 150 characters", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            val allowedEmails = listOf(
+                "gmail.com",
+                "yahoo.com",
+                "outlook.com",
+                "hotmail.com",
+                "icloud.com"
+            )
+
+            val domain = email.substringAfter("@")
+
+            if (domain !in allowedEmails) {
+                Toast.makeText(
+                    this,
+                    "Please use a valid email address",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
             // Validate password strength
-            val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")
+            val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$")
 
             if (!passwordPattern.matches(password)) {
                 Toast.makeText(
                     this,
-                    "Password must be at least 8 characters and include uppercase, lowercase, and a number",
+                    "Password must be at least 8 characters and include uppercase, lowercase, a number, and a symbol",
                     Toast.LENGTH_LONG
                 ).show()
                 return@setOnClickListener
@@ -63,15 +89,30 @@ class SignupActivity : AppCompatActivity() {
             // Database Operations
             lifecycleScope.launch {
                 val db = AppDatabase.getDatabase(applicationContext)
-                val existingUser = db.userDao().getUserByEmail(email)
 
-                if (existingUser != null) {
-                    Toast.makeText(this@SignupActivity, "Email already exists!", Toast.LENGTH_SHORT).show()
-                } else {
+                try {
+                    val existingUser = db.userDao().getUserByEmail(email)
+
+                    if (existingUser != null) {
+                        Toast.makeText(this@SignupActivity, "Email already exists!", Toast.LENGTH_SHORT).show()
+                        return@launch
+                    }
+
                     // Hash Password & Insert User
                     val securePassword = hashPassword(password)
-                    val newUser = User(fullName = name, email = email, passwordHash = securePassword)
+
+                    val newUser = User(
+                        fullName = name,
+                        email = email,
+                        passwordHash = securePassword,
+                        age = null
+                    )
+
                     db.userDao().insertUser(newUser)
+
+                    // DEBUG CHECK (does not affect logic)
+                    val testUser = db.userDao().getUserByEmail(email)
+                    android.util.Log.d("SIGNUP_DEBUG", "Inserted user = $testUser")
 
                     Toast.makeText(this@SignupActivity, "Account Created!", Toast.LENGTH_SHORT).show()
 
@@ -89,6 +130,14 @@ class SignupActivity : AppCompatActivity() {
                     val intent = Intent(this@SignupActivity, GettingStartedActivity::class.java)
                     startActivity(intent)
                     finish()
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    Toast.makeText(
+                        this@SignupActivity,
+                        "Signup failed. Please try again.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }

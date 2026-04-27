@@ -2,6 +2,7 @@ package com.example.kubli
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.ImageView
@@ -13,8 +14,30 @@ import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class EditProfileActivity : AppCompatActivity() {
+
+    private var selectedImageUri: Uri? = null
+
+    // ADDED: Save image permanently in internal storage
+    private fun saveImageToInternalStorage(uri: Uri): String? {
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val file = File(filesDir, "profile.jpg")
+            val outputStream = file.outputStream()
+
+            inputStream?.copyTo(outputStream)
+
+            inputStream?.close()
+            outputStream.close()
+
+            file.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,14 +48,34 @@ class EditProfileActivity : AppCompatActivity() {
         val etName = findViewById<EditText>(R.id.etName)
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etAge = findViewById<EditText>(R.id.etAge)
+        val ivProfilePic = findViewById<ImageView>(R.id.ivProfilePic)
 
         // PRE-FILL DATA
         val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
-        val oldEmail = sharedPref.getString("USER_EMAIL", "") ?: "" //find the user in the DB
+        val oldEmail = sharedPref.getString("USER_EMAIL", "") ?: ""
 
         etName.setText(sharedPref.getString("USER_NAME", ""))
         etEmail.setText(oldEmail)
         etAge.setText(sharedPref.getString("USER_AGE", ""))
+
+        val savedImage = sharedPref.getString("USER_PROFILE_PIC", null)
+
+        // FIXED: safer image loading (prevents crash + invalid URI)
+        if (!savedImage.isNullOrEmpty()) {
+            val file = File(savedImage)
+            if (file.exists()) {
+                val uri = Uri.fromFile(file)
+                ivProfilePic.setImageURI(uri)
+                selectedImageUri = uri
+            }
+        }
+
+        ivProfilePic.setOnClickListener {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.type = "image/*"
+            startActivityForResult(intent, 100)
+        }
 
         // HANDLE BACK BUTTON
         btnBack.setOnClickListener {
@@ -46,50 +89,63 @@ class EditProfileActivity : AppCompatActivity() {
         btnSaveChanges.setOnClickListener {
             val newName = etName.text.toString().trim()
             val newEmail = etEmail.text.toString().trim()
-            val newAge = etAge.text.toString().trim()
+            val newAge = etAge.text.toString().trim().toIntOrNull() ?: 0
+
+            if (newAge !in 1..120) {
+                Toast.makeText(this, "Enter a valid age", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
             if (newName.isEmpty() || newEmail.isEmpty()) {
                 Toast.makeText(this, "Name and Email cannot be empty", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Database Operations run in a coroutine
             lifecycleScope.launch(Dispatchers.IO) {
                 val db = AppDatabase.getDatabase(applicationContext)
-
-                //Find the exact user in the database using their old email
                 val userToUpdate = db.userDao().getUserByEmail(oldEmail)
 
                 if (userToUpdate != null) {
-                    // Change their details
+
+                    val imagePath = selectedImageUri?.let { saveImageToInternalStorage(it) }
+
                     val updatedUser = userToUpdate.copy(
                         fullName = newName,
-                        email = newEmail
-                        // age = newAge // thinking of removing the age
+                        email = newEmail,
+                        age = newAge,
+                        profileImagePath = imagePath // FIXED: safe nullable handling
                     )
-                    //Save the updated user back to the permanent database
+
                     db.userDao().updateUser(updatedUser)
 
-                    //Switch back to the Main thread to update the UI and Session
                     withContext(Dispatchers.Main) {
                         val editor = sharedPref.edit()
+
+                        // SESSION ONLY (DO NOT STORE AGE OR IMAGE HERE)
                         editor.putString("CURRENT_USERNAME", newName)
                         editor.putString("USER_NAME", newName)
                         editor.putString("USER_EMAIL", newEmail)
-                        editor.putString("USER_AGE", newAge)
+
+                        // FIXED: persist age separately so UI survives restart
+                        editor.putString("USER_AGE", newAge.toString())
+
+                        // FIXED: only save image if available
+                        imagePath?.let {
+                            editor.putString("USER_PROFILE_PIC", it)
+                        }
+
                         editor.apply()
 
-                        Toast.makeText(this@EditProfileActivity, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@EditProfileActivity,
+                            "Profile updated successfully!",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
                         val intent = Intent(this@EditProfileActivity, UserProfileActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                         startActivity(intent)
                         finish()
-                    }
-                } else {
-                    // Safety check just in case something goes wrong
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@EditProfileActivity, "Error: User not found in database.", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -102,9 +158,7 @@ class EditProfileActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    val intent = Intent(this, HomeActivity::class.java)
-                    startActivity(intent)
-                    overridePendingTransition(0, 0)
+                    startActivity(Intent(this, HomeActivity::class.java))
                     finishAffinity()
                     true
                 }
@@ -113,13 +167,25 @@ class EditProfileActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_settings -> {
-                    val intent = Intent(this, SettingsActivity::class.java)
-                    startActivity(intent)
-                    overridePendingTransition(0, 0)
+                    startActivity(Intent(this, SettingsActivity::class.java))
                     finishAffinity()
                     true
                 }
                 else -> false
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            val imageUri = data?.data
+            val ivProfilePic = findViewById<ImageView>(R.id.ivProfilePic)
+
+            if (imageUri != null) {
+                ivProfilePic.setImageURI(imageUri)
+                selectedImageUri = imageUri
             }
         }
     }

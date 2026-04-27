@@ -41,22 +41,38 @@ class SigninActivity : AppCompatActivity() {
             val emailLayout = findViewById<TextInputLayout>(R.id.inputUser)
             val passLayout = findViewById<TextInputLayout>(R.id.inputPassword)
 
-            val input = emailLayout.editText?.text.toString().trim()
+            val inputRaw = emailLayout.editText?.text.toString().trim()
             val password = passLayout.editText?.text.toString().trim()
 
-            if (input.isEmpty() || password.isEmpty()) {
+            if (inputRaw.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter credentials", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            val inputEmail = inputRaw.lowercase()
+
             // Database Verification
             lifecycleScope.launch {
                 val db = AppDatabase.getDatabase(applicationContext)
-                val user = db.userDao().getUserByEmail(input.lowercase())
-                    ?: db.userDao().getUserByName(input)
+
+                val user = try {
+                    val emailUser = db.userDao().getUserByEmail(inputEmail)
+
+                    if (emailUser != null) {
+                        emailUser
+                    } else {
+                        // IMPORTANT FIX: avoid breaking username matching due to casing
+                        db.userDao().getUserByName(inputRaw)
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    null
+                }
 
                 if (user != null) {
                     val inputHash = hashPassword(password)
+
                     if (inputHash == user.passwordHash) {
 
                         // Login Success
@@ -64,13 +80,17 @@ class SigninActivity : AppCompatActivity() {
 
                         // Save User Session (UPDATED TO INCLUDE EMAIL AND PROFILE NAME)
                         val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
-                        with (sharedPref.edit()) {
+                        with(sharedPref.edit()) {
                             putString("CURRENT_USERNAME", user.fullName) // Used for Home Screen
                             putString("USER_NAME", user.fullName)        // Used for Profile Screen
                             putString("USER_EMAIL", user.email)          // Used for Profile Screen
                             putBoolean("IS_LOGGED_IN", true)
                             apply()
                         }
+
+                        // CLEAR ERRORS (prevents UI bug after success)
+                        emailLayout.error = null
+                        passLayout.error = null
 
                         // CHECK ROUTE: New User vs Returning User
                         val isNewUser = intent.getBooleanExtra("IS_NEW_USER", false)

@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.card.MaterialCardView
+import java.io.File
 
 class UserProfileActivity : AppCompatActivity() {
 
@@ -27,18 +28,40 @@ class UserProfileActivity : AppCompatActivity() {
         val tvEmailValue = findViewById<TextView>(R.id.tvEmailValue)
         val tvAgeValue = findViewById<TextView>(R.id.tvAgeValue)
 
+        // ADDED: profile image view
+        val ivProfilePic = findViewById<ImageView>(R.id.ivProfilePic)
+
         // FETCH USERNAME FROM SESSION (Matches HomeActivity logic)
         val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
         val username = sharedPref.getString("CURRENT_USERNAME", "Username") ?: "Username"
         val name = sharedPref.getString("USER_NAME", "Username") ?: "Username"
         val email = sharedPref.getString("USER_EMAIL", "Username@email.com") ?: "Username@email.com"
-        val age = sharedPref.getString("USER_AGE", "") ?: "" // Defaults to completely blank
+        val age = sharedPref.getString("USER_AGE", "") ?: ""
 
         // Update the UI with the fetched username
         tvUsername.text = username
         tvNameValue.text = username
         tvEmailValue.text = email
         tvAgeValue.text = age
+
+        // ADDED: load saved profile image (FIXED: file-based loading for persistence)
+        val savedImage = sharedPref.getString("USER_PROFILE_PIC", null)
+
+        if (!savedImage.isNullOrEmpty()) {
+            try {
+                val file = File(savedImage)
+
+                if (file.exists()) {
+                    val uri = android.net.Uri.fromFile(file)
+                    ivProfilePic.setImageURI(uri)
+                } else {
+                    ivProfilePic.setImageResource(android.R.drawable.ic_menu_gallery)
+                }
+
+            } catch (e: Exception) {
+                ivProfilePic.setImageResource(android.R.drawable.ic_menu_gallery)
+            }
+        }
 
         // Handle Back Navigation
         btnBack.setOnClickListener {
@@ -56,17 +79,20 @@ class UserProfileActivity : AppCompatActivity() {
 
         // Navigate to Login/Signup on Log out
         btnLogout.setOnClickListener {
-            // FIX: Clear the session data
             val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
-            sharedPref.edit().clear().apply()
+            val editor = sharedPref.edit()
+
+            editor.putBoolean("IS_LOGGED_IN", false)
+            editor.remove("CURRENT_USERNAME")
+
+            editor.apply()
+
             val intent = Intent(this, LoginsignupActivity::class.java)
 
-            // Clear the back stack so user can't press back to return to profile
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }
-
         // Change Password Placeholder
         cardChangePassword.setOnClickListener {
             val intent = Intent(this, UpdatePasswordActivity::class.java)
@@ -82,11 +108,11 @@ class UserProfileActivity : AppCompatActivity() {
                 R.id.nav_home -> {
                     val intent = Intent(this, HomeActivity::class.java)
                     startActivity(intent)
-                    overridePendingTransition(0, 0) // Disables animation for seamless tab switch
-                    finish() // Prevents stacking activities endlessly
+                    overridePendingTransition(0, 0)
+                    finish()
                     true
                 }
-                R.id.nav_profile -> true // Already on Profile
+                R.id.nav_profile -> true
                 R.id.nav_settings -> {
                     val intent = Intent(this, SettingsActivity::class.java)
                     startActivity(intent)
