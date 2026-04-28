@@ -85,9 +85,14 @@ class Encodetext : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Preserve exact formatting
+            val cleanText = textToShare
+                .replace("\n", "")        // remove line breaks
+                .replace("\r", "")        // remove carriage returns
+
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.type = "text/plain"
-            shareIntent.putExtra(Intent.EXTRA_TEXT, textToShare)
+            shareIntent.putExtra(Intent.EXTRA_TEXT, cleanText)
 
             startActivity(Intent.createChooser(shareIntent, "Share encrypted text via"))
         }
