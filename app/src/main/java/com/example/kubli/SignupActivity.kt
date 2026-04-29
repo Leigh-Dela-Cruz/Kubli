@@ -75,7 +75,7 @@ class SignupActivity : AppCompatActivity() {
             }
 
             // Validate password strength
-            val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$")
+            val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[_\\W-]).{8,}$")
 
             if (!passwordPattern.matches(password)) {
                 Toast.makeText(

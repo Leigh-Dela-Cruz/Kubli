@@ -17,6 +17,9 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder.decodeBitmap
 import com.example.kubli.backend.SteganographyAPI
 import android.graphics.ImageDecoder.createSource
+import android.widget.TextView
+import com.google.android.material.card.MaterialCardView
+import android.provider.OpenableColumns
 
 class Encodeimage : AppCompatActivity() {
 
@@ -27,7 +30,12 @@ class Encodeimage : AppCompatActivity() {
 
     private suspend fun saveImageToGallery(bitmap: android.graphics.Bitmap) {
         //Set up the metadata for the image
-        val filename = "Kubli_Encoded_${System.currentTimeMillis()}.png"
+        val inputName = intent.getStringExtra("IMAGE_NAME") ?: "image"
+        val fileExtension = ".png"
+
+        val cleanName = inputName.substringBeforeLast(".").ifBlank { "image" }
+
+        val filename = "Kubli_Encoded_${cleanName}_${System.currentTimeMillis()}$fileExtension"
         var outputStream: java.io.OutputStream? = null
 
         val contentValues = android.content.ContentValues().apply {
@@ -46,7 +54,6 @@ class Encodeimage : AppCompatActivity() {
         val uri = contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 
         try {
-            //Open a stream to the new URI and compress the bitmap into it
             uri?.let {
                 outputStream = contentResolver.openOutputStream(it)
                 outputStream?.let { stream ->
@@ -55,14 +62,12 @@ class Encodeimage : AppCompatActivity() {
                 }
             }
 
-            // If on Android 10+, mark the file as completely finished writing
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                 contentValues.clear()
                 contentValues.put(android.provider.MediaStore.MediaColumns.IS_PENDING, 0)
                 uri?.let { contentResolver.update(it, contentValues, null, null) }
             }
 
-            // Show toast on the main thread
             withContext(Dispatchers.Main) {
                 Toast.makeText(this@Encodeimage, "Image saved to Gallery successfully!", Toast.LENGTH_SHORT).show()
             }
@@ -73,7 +78,6 @@ class Encodeimage : AppCompatActivity() {
                 Toast.makeText(this@Encodeimage, "Failed to save image: ${e.message}", Toast.LENGTH_LONG).show()
             }
         } finally {
-            //close the stream to prevent memory leaks
             outputStream?.close()
         }
     }
@@ -88,47 +92,51 @@ class Encodeimage : AppCompatActivity() {
         btnSaveImage = findViewById(R.id.btnSaveImage)
         btnStartNewTask = findViewById(R.id.btnStartNewTask)
 
-        //Retrieve the incoming Image URI and display it
-        // (This gets the data passed from Encodemessage.kt)
+        // ADDED: real filename + file type extraction from Uri
         val imageUriString = intent.getStringExtra("IMAGE_URI")
+        val imageUri = imageUriString?.let { Uri.parse(it) }
+
+        val imageName = imageUri?.let { uri ->
+            var resultName: String? = null
+            contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (cursor.moveToFirst() && nameIndex != -1) {
+                    resultName = cursor.getString(nameIndex)
+                }
+            }
+            resultName
+        } ?: "unknown_file"
+
+        val card = findViewById<MaterialCardView>(R.id.cardStatus)
+        val linear = card.getChildAt(0) as android.widget.LinearLayout
+        val innerRow = linear.getChildAt(1) as android.widget.LinearLayout
+        val fileText = innerRow.getChildAt(1) as TextView
+        fileText.text = imageName
+
         val originalText = intent.getStringExtra("ORIGINAL_TEXT") ?: ""
         val passwordInput = intent.getStringExtra("PASSWORD") ?: ""
         val password = passwordInput.ifEmpty { "demo1234" }
 
         if (imageUriString != null) {
-            val imageUri = Uri.parse(imageUriString)
+            val uriParsed = Uri.parse(imageUriString)
 
-            // Encode using SteganographyAPI
             val api = SteganographyAPI(this)
             lifecycleScope.launch {
                 try {
-                    // Decode bitmap on a background thread
                     val bitmap: Bitmap = withContext(Dispatchers.IO) {
-                        decodeBitmap(createSource(contentResolver, imageUri))
+                        decodeBitmap(createSource(contentResolver, uriParsed))
                     }
 
                     val result = api.encryptImage(originalText, password, bitmap)
                     if (result.success) {
                         imgEncodedResult.setImageBitmap(result.stegoBitmap)
                         imgEncodedResult.visibility = ImageView.VISIBLE
-                        Toast.makeText(
-                            this@Encodeimage,
-                            "Encoded image ready!",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@Encodeimage, "Encoded image ready!", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(
-                            this@Encodeimage,
-                            "Encoding failed: ${result.error}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@Encodeimage, "Encoding failed: ${result.error}", Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
-                    Toast.makeText(
-                        this@Encodeimage,
-                        "Error processing image: ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this@Encodeimage, "Error processing image: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         } else {
@@ -146,12 +154,10 @@ class Encodeimage : AppCompatActivity() {
             val drawable = imgEncodedResult.drawable
 
             if (drawable != null) {
-                //Safely convert to bitmap to prevent crashes
                 val bitmap = drawable.toBitmap()
 
                 Toast.makeText(this, "Saving image... please wait.", Toast.LENGTH_SHORT).show()
 
-                // Run the save function on a background thread so the app doesn't freeze
                 lifecycleScope.launch(Dispatchers.IO) {
                     saveImageToGallery(bitmap)
                 }

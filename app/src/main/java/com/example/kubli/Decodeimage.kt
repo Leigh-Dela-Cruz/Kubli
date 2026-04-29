@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -29,14 +30,33 @@ class Decodeimage : AppCompatActivity() {
         val btnCopyText = findViewById<MaterialButton>(R.id.btnCopyText)
         val btnStartNewTask = findViewById<MaterialButton>(R.id.btnStartNewTask)
 
-        //Receive data from previous activity
+        // ADDED: filename support for UI display
         val imageUriString = intent.getStringExtra("IMAGE_URI")
+        val imageUri = imageUriString?.let { Uri.parse(it) }
+
+        val imageName = imageUri?.let { uri ->
+            var name: String? = null
+            contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (cursor.moveToFirst() && index != -1) {
+                    name = cursor.getString(index)
+                }
+            }
+            name
+        } ?: "unknown_file"
+
+        val card = findViewById<androidx.cardview.widget.CardView>(R.id.cardStatus)
+        val container = card.getChildAt(0) as android.widget.LinearLayout
+        val fileRow = container.getChildAt(1) as android.widget.LinearLayout
+        val fileNameText = fileRow.getChildAt(1) as TextView
+        fileNameText.text = imageName
+
         val passwordInput = intent.getStringExtra("PASSWORD") ?: ""
         val password = passwordInput.ifEmpty { "demo1234" }
 
         if (imageUriString != null) {
-            val imageUri = Uri.parse(imageUriString)
-            imgDecryptedResult.setImageURI(imageUri)
+            val uriParsed = Uri.parse(imageUriString)
+            imgDecryptedResult.setImageURI(uriParsed)
 
             lifecycleScope.launch {
                 try {
@@ -44,7 +64,7 @@ class Decodeimage : AppCompatActivity() {
 
                     val result = api.decryptImage(
                         context = this@Decodeimage,
-                        imageUri = imageUri,
+                        imageUri = uriParsed,
                         password = password
                     )
 
@@ -68,7 +88,6 @@ class Decodeimage : AppCompatActivity() {
         btnCopyText.setOnClickListener {
             val decodedText = textDecodedResult.text.toString()
 
-            // Access Android's Clipboard Manager
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("Decoded Message", decodedText)
             clipboard.setPrimaryClip(clip)
@@ -78,7 +97,6 @@ class Decodeimage : AppCompatActivity() {
 
         //Start New Task Logic
         btnStartNewTask.setOnClickListener {
-            // This clears the backstack and sends the user cleanly back to HomeActivity
             val intent = Intent(this, HomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)

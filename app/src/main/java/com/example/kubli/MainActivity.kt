@@ -1,5 +1,6 @@
 package com.example.kubli
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -15,10 +16,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.splash_screen)
 
-        // Wait 3 seconds, then go to Choice Screen
+        // ADDED: Check session before navigating
+        val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
+        val isLoggedIn = sharedPref.getBoolean("IS_LOGGED_IN", false)
+
+        // Wait 3 seconds, then go to appropriate screen
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, LoginsignupActivity::class.java)
-            startActivity(intent)
+
+            if (isLoggedIn) {
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
+            } else {
+                val intent = Intent(this, LoginsignupActivity::class.java)
+                startActivity(intent)
+            }
+
             finish()
         }, 3000)
     }
