@@ -94,13 +94,40 @@
         ]]>
     </string>
 
-    <string name="terms_intro_tagalog">Maligayang pagdating sa Kubli...</string>
+    <string name="terms_intro_tagalog">Maligayang pagdating sa Kubli. Sa paggamit ng aming mobile application, sumasang-ayon ka sa mga sumusunod na tuntunin. Pakibasa itong mabuti upang maunawaan kung paano gumagana ang app patungkol sa iyong privacy at data.</string>
     <string name="terms_ready_desc_tagalog">Sa pag-click ng \'Accept\', sumasang-ayon ka sa aming Mga Tuntunin at Kundisyon.</string>
     <string name="terms_body_tagalog">
-        <![CDATA[
-        <b>1. Uri ng Serbisyo</b><br/>
-        (Add your Tagalog translation here...)
-        ]]>
-    </string>
+    <![CDATA[
+    <b>1. Uri ng Serbisyo</b><br/>
+    Ang Kubli ay isang mobile application para sa steganography, kung saan pwedeng magtago ng text data sa loob ng mga image file. Kasalukuyan itong ginawa para sa mga Android device.<br/><br/>
+
+    <b>2. Offline-First at Local Storage</b><br/>
+    - Offline Functionality: Ang Kubli ay dinisenyo para gumana kahit walang internet. Hindi kailangan ng koneksyon para mag-encode o mag-decode ng mga mensahe.<br/>
+    - Local Processing: Lahat ng pagproseso ng imahe, encryption, at pagtatago ng data ay nangyayari lamang sa loob ng iyong device.<br/>
+    - Local Saving: Ang mga encoded na imahe ay direktang mase-save sa internal storage o gallery ng iyong phone. Walang cloud storage o backup services ang Kubli.<br/><br/>
+
+    <b>3. Data Privacy at Non-Disclosure</b><br/>
+    - Walang Data Collection: Hindi kami nangongolekta, nagtatago, o nagpapadala ng iyong mga imahe, mensahe, o passphrase sa anumang external server o third-party platform.<br/>
+    - Responsibilidad ng User: Dahil hindi itinatago ng Kubli ang iyong data sa server, hindi namin mababawi ang mga nawalang passphrase o original na imahe kapag nabura ang mga ito sa iyong device. Ikaw ang tanging may hawak at responsable sa iyong hidden data at mga key.<br/><br/>
+
+    <b>4. Wastong Paggamit at Legal na Tuntunin</b><br/>
+    Sumasang-ayon ka na gamitin ang Kubli para sa mga legal na layunin lamang. Ipinagbabawal ang paggamit ng app para sa:<br/>
+    - Pagtatago o pagpapadala ng mga ilegal, copyrighted, o mapaminsalang materyales.<br/>
+    - Anumang aktibidad na labag sa lokal o internasyonal na batas.<br/><br/>
+    Ang development team ng Kubli ay walang pananagutan sa kung paano pipiliin ng mga user na gamitin ang mga feature ng app.<br/><br/>
+
+    <b>5. Disclaimer sa Seguridad</b><br/>
+    Bagama\'t gumagamit ang Kubli ng encryption at steganography para protektahan ang data, walang paraan ang 100%% na ligtas. Sa paggamit ng app na ito, kinikilala mo na nauunawaan mo ang mga panganib na may kaugnayan sa digital data security.<br/><br/>
+
+    <b>6. Limitasyon ng Pananagutan (Limitation of Liability)</b><br/>
+    Ang Kubli ay ibinibigay nang "as-is" o kung ano lang ang kasalukuyang feature nito nang walang anumang warranty. Wala kaming pananagutan sa:<br/>
+    - Anumang pagkawala ng data o imahe.<br/>
+    - Pinsala sa iyong device.<br/>
+    - Pagkabigo na i-decrypt o i-decode ang mensahe kung nakalimutan ang passphrase o kung ang imahe ay nabago ng "lossy compression" (halimbawa: pagsend sa social media apps na nagpapaliit ng quality ng image).<br/><br/>
+
+    <b>7. Mga Pagbabago sa Kasunduan</b><br/>
+    Inirereserba namin ang karapatan na i-update ang mga tuntuning ito habang umuunlad ang app. Ang patuloy na paggamit sa app ay nangangahulugang tinatanggap mo ang mga updated na tuntunin.
+    ]]>
+</string>
 
 </resources>
