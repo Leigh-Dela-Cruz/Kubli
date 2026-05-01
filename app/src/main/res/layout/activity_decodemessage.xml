@@ -45,173 +45,189 @@
         app:layout_constraintTop_toTopOf="@+id/btnMenu"
         app:layout_constraintBottom_toBottomOf="@+id/btnMenu" />
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/containerUpload"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="32dp"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="0dp"
-        app:strokeWidth="1dp"
-        app:strokeColor="#E5E7EB"
-        app:layout_constraintTop_toBottomOf="@+id/textTitle">
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@+id/btnMenu"
+        app:layout_constraintBottom_toTopOf="@+id/btnExtractMessage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:paddingTop="32dp"
+            android:paddingBottom="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Upload an image for Decoding"
-                android:textSize="14sp"
-                android:textColor="#1F2937"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp"/>
-
-            <LinearLayout
-                android:id="@+id/layoutUploadClick"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/containerUpload"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:background="@drawable/bg_dashed_border"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:clickable="true"
-                android:focusable="true">
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="20dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#E5E7EB">
 
-                <ImageView
-                    android:id="@+id/imgPreview"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_download"
-                    app:tint="#8A3FFC" />
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Click or drag an image"
-                    android:textStyle="bold"
-                    android:textColor="#1F2937"
-                    android:layout_marginTop="8dp"/>
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Upload an image for Decoding"
+                        android:textSize="14sp"
+                        android:textColor="#1F2937"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp"/>
+
+                    <LinearLayout
+                        android:id="@+id/layoutUploadClick"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:background="@drawable/bg_dashed_border"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:id="@+id/imgPreview"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@drawable/ic_download"
+                            app:tint="#8A3FFC" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Click or drag an image"
+                            android:textStyle="bold"
+                            android:textColor="#1F2937"
+                            android:layout_marginTop="8dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PNG, JPG, or WEBP format"
+                            android:textSize="12sp"
+                            android:textColor="#9CA3AF"
+                            android:layout_marginTop="4dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/containerText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="20dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#E5E7EB">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="PNG, JPG, or WEBP format"
-                    android:textSize="12sp"
-                    android:textColor="#9CA3AF"
-                    android:layout_marginTop="4dp"/>
-            </LinearLayout>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/containerText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="20dp"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="0dp"
-        app:strokeWidth="1dp"
-        app:strokeColor="#E5E7EB"
-        app:layout_constraintTop_toBottomOf="@+id/containerUpload">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Enter text to decode"
+                        android:textSize="14sp"
+                        android:textColor="#1F2937"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+                    <EditText
+                        android:id="@+id/inputText"
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:background="@drawable/bg_dashed_gray"
+                        android:padding="16dp"
+                        android:hint="Enter text to decode..."
+                        android:gravity="top|start"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Enter text to decode"
-                android:textSize="14sp"
-                android:textColor="#1F2937"
-                android:textStyle="bold"
-                android:layout_marginBottom="16dp"/>
-
-            <EditText
-                android:id="@+id/inputText"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:background="@drawable/bg_dashed_gray"
-                android:padding="16dp"
-                android:hint="Enter text to decode..."
-                android:gravity="top|start"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/containerDecryption"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="20dp"
-        app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="0dp"
-        app:strokeWidth="1dp"
-        app:strokeColor="#E5E7EB"
-        app:layout_constraintTop_toBottomOf="@+id/containerText">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/containerDecryption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="8dp">
+                android:layout_marginHorizontal="24dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#E5E7EB">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Decryption Key"
-                    android:textSize="14sp"
-                    android:textColor="#1F2937"
-                    android:textStyle="bold" />
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                <ImageView
-                    android:id="@+id/btnInfo"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_info" />
-            </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
 
-            <TextView
-                android:id="@+id/textInfoDesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="If the hidden data was strongly encrypted, entering the correct password here will decrypt it. Without the correct password, you will only extract unreadable gibberish."
-                android:textSize="12sp"
-                android:textColor="#4B5563"
-                android:layout_marginBottom="12dp"
-                android:visibility="gone" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Decryption Key"
+                            android:textSize="14sp"
+                            android:textColor="#1F2937"
+                            android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/inputPassword"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:background="@drawable/bg_dashed_gray"
-                android:padding="16dp"
-                android:hint="Enter password to decrypt..."
-                android:inputType="textPassword"
-                android:textSize="14sp" />
+                        <ImageView
+                            android:id="@+id/btnInfo"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_marginStart="8dp"
+                            android:src="@drawable/ic_info" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textInfoDesc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="If the hidden data was strongly encrypted, entering the correct password here will decrypt it. Without the correct password, you will only extract unreadable gibberish."
+                        android:textSize="12sp"
+                        android:textColor="#4B5563"
+                        android:layout_marginBottom="12dp"
+                        android:visibility="gone" />
+
+                    <EditText
+                        android:id="@+id/inputPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:background="@drawable/bg_dashed_gray"
+                        android:padding="16dp"
+                        android:hint="Enter password to decrypt..."
+                        android:inputType="textPassword"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </ScrollView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnExtractMessage"
@@ -229,6 +245,8 @@
         app:iconTint="@color/white"
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
