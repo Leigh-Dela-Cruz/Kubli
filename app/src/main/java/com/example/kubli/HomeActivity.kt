@@ -8,6 +8,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.card.MaterialCardView
+import android.content.res.Resources
+import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
 class HomeActivity : AppCompatActivity() {
 
@@ -49,6 +53,16 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
+        val bottomNavContainer = findViewById<MaterialCardView>(R.id.bottomNavigationContainer)
+        ViewCompat.setOnApplyWindowInsetsListener(bottomNavContainer) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val params = view.layoutParams as ViewGroup.MarginLayoutParams
+            params.bottomMargin = systemBars.bottom + dpToPx(16)
+            view.layoutParams = params
+            insets
+        }
+
+
         // ==========================================
         // 3D RISE ANIMATION & CLICK LOGIC
         // ==========================================
@@ -58,6 +72,9 @@ class HomeActivity : AppCompatActivity() {
         applyRiseEffect(cardEncode, Encodemessage::class.java)
         applyRiseEffect(cardDecode, Decodemessage::class.java)
     }
+
+    private fun dpToPx(dp: Int): Int = (dp * Resources.getSystem().displayMetrics.density).toInt()
+
 
     /**
      * Creates a smooth 3D lifting effect when the user touches the card,
