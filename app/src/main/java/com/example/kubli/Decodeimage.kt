@@ -34,16 +34,20 @@ class Decodeimage : AppCompatActivity() {
         val imageUriString = intent.getStringExtra("IMAGE_URI")
         val imageUri = imageUriString?.let { Uri.parse(it) }
 
-        val imageName = imageUri?.let { uri ->
-            var name: String? = null
-            contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-                val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (cursor.moveToFirst() && index != -1) {
-                    name = cursor.getString(index)
+        val imageName = try {
+            imageUri?.let { uri ->
+                var name: String? = null
+                contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                    val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (cursor.moveToFirst() && index != -1) {
+                        name = cursor.getString(index)
+                    }
                 }
+                name
             }
-            name
-        } ?: "unknown_file"
+        } catch (e: Exception) {
+            null
+        } ?: "camera_image.jpg"
 
         val card = findViewById<androidx.cardview.widget.CardView>(R.id.cardStatus)
         val container = card.getChildAt(0) as android.widget.LinearLayout
@@ -62,16 +66,20 @@ class Decodeimage : AppCompatActivity() {
                 try {
                     val api = SteganographyAPI(this@Decodeimage)
 
-                    val result = api.decryptImage(
-                        context = this@Decodeimage,
-                        imageUri = uriParsed,
-                        password = password
-                    )
+                    val result = try {
+                        api.decryptImage(
+                            context = this@Decodeimage,
+                            imageUri = uriParsed,
+                            password = password
+                        )
+                    } catch (e: Exception) {
+                        null
+                    }
 
-                    textDecodedResult.text = if (result.success) {
+                    textDecodedResult.text = if (result?.success == true) {
                         result.message ?: "Decoded, but message is empty."
                     } else {
-                        "Decoding failed: ${result.error ?: "Unknown error"}"
+                        "Decoding failed: ${result?.error ?: "Invalid or unsupported image"}"
                     }
                 } catch (e: Exception) {
                     textDecodedResult.text = "Crash prevented: ${e.localizedMessage}"

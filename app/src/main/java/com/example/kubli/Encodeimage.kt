@@ -49,7 +49,6 @@ class Encodeimage : AppCompatActivity() {
             }
         }
 
-        //Insert the metadata into the MediaStore
         val contentResolver = contentResolver
         val uri = contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 
@@ -57,7 +56,6 @@ class Encodeimage : AppCompatActivity() {
             uri?.let {
                 outputStream = contentResolver.openOutputStream(it)
                 outputStream?.let { stream ->
-                    // Use PNG to ensure no steganography data is lost to compression
                     bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
                 }
             }
@@ -92,20 +90,24 @@ class Encodeimage : AppCompatActivity() {
         btnSaveImage = findViewById(R.id.btnSaveImage)
         btnStartNewTask = findViewById(R.id.btnStartNewTask)
 
-        // ADDED: real filename + file type extraction from Uri
+        // ADDED: real filename + file type extraction from Uri (SAFE FOR CAMERA)
         val imageUriString = intent.getStringExtra("IMAGE_URI")
         val imageUri = imageUriString?.let { Uri.parse(it) }
 
-        val imageName = imageUri?.let { uri ->
-            var resultName: String? = null
-            contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (cursor.moveToFirst() && nameIndex != -1) {
-                    resultName = cursor.getString(nameIndex)
+        val imageName = try {
+            imageUri?.let { uri ->
+                var resultName: String? = null
+                contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (cursor.moveToFirst() && nameIndex != -1) {
+                        resultName = cursor.getString(nameIndex)
+                    }
                 }
+                resultName
             }
-            resultName
-        } ?: "unknown_file"
+        } catch (e: Exception) {
+            null
+        } ?: "camera_image.jpg"
 
         val card = findViewById<MaterialCardView>(R.id.cardStatus)
         val linear = card.getChildAt(0) as android.widget.LinearLayout
@@ -123,8 +125,17 @@ class Encodeimage : AppCompatActivity() {
             val api = SteganographyAPI(this)
             lifecycleScope.launch {
                 try {
-                    val bitmap: Bitmap = withContext(Dispatchers.IO) {
-                        decodeBitmap(createSource(contentResolver, uriParsed))
+                    val bitmap: Bitmap? = withContext(Dispatchers.IO) {
+                        try {
+                            decodeBitmap(createSource(contentResolver, uriParsed))
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
+
+                    if (bitmap == null) {
+                        Toast.makeText(this@Encodeimage, "Error: Unable to read image", Toast.LENGTH_SHORT).show()
+                        return@launch
                     }
 
                     val result = api.encryptImage(originalText, password, bitmap)
