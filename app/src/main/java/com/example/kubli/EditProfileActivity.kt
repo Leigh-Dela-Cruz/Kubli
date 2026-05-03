@@ -46,7 +46,6 @@ class EditProfileActivity : AppCompatActivity() {
         val btnBack = findViewById<ImageView>(R.id.btnBack)
         val btnSaveChanges = findViewById<MaterialButton>(R.id.btnSaveChanges)
         val etName = findViewById<EditText>(R.id.etName)
-        val etEmail = findViewById<EditText>(R.id.etEmail)
         val etAge = findViewById<EditText>(R.id.etAge)
         val ivProfilePic = findViewById<ImageView>(R.id.ivProfilePic)
 
@@ -55,7 +54,6 @@ class EditProfileActivity : AppCompatActivity() {
         val oldEmail = sharedPref.getString("USER_EMAIL", "") ?: ""
 
         etName.setText(sharedPref.getString("USER_NAME", ""))
-        etEmail.setText(oldEmail)
         etAge.setText(sharedPref.getString("USER_AGE", ""))
 
         val savedImage = sharedPref.getString("USER_PROFILE_PIC", null)
@@ -88,7 +86,6 @@ class EditProfileActivity : AppCompatActivity() {
         // HANDLE SAVE CHANGES with Database integration
         btnSaveChanges.setOnClickListener {
             val newName = etName.text.toString().trim()
-            val newEmail = etEmail.text.toString().trim()
             val newAge = etAge.text.toString().trim().toIntOrNull() ?: 0
 
             if (newAge !in 1..120) {
@@ -96,10 +93,6 @@ class EditProfileActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (newName.isEmpty() || newEmail.isEmpty()) {
-                Toast.makeText(this, "Name and Email cannot be empty", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
 
             lifecycleScope.launch(Dispatchers.IO) {
                 val db = AppDatabase.getDatabase(applicationContext)
@@ -111,7 +104,6 @@ class EditProfileActivity : AppCompatActivity() {
 
                     val updatedUser = userToUpdate.copy(
                         fullName = newName,
-                        email = newEmail,
                         age = newAge,
                         profileImagePath = imagePath // FIXED: safe nullable handling
                     )
@@ -124,7 +116,6 @@ class EditProfileActivity : AppCompatActivity() {
                         // SESSION ONLY (DO NOT STORE AGE OR IMAGE HERE)
                         editor.putString("CURRENT_USERNAME", newName)
                         editor.putString("USER_NAME", newName)
-                        editor.putString("USER_EMAIL", newEmail)
 
                         // FIXED: persist age separately so UI survives restart
                         editor.putString("USER_AGE", newAge.toString())
