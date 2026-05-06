@@ -36,7 +36,12 @@ class UserProfileActivity : AppCompatActivity() {
         val username = sharedPref.getString("USER_NAME", "Username") ?: "Username"
         val name = sharedPref.getString("USER_NAME", "Username") ?: "Username"
         val email = sharedPref.getString("USER_EMAIL", "Username@email.com") ?: "Username@email.com"
-        val age = sharedPref.getString("USER_AGE", "") ?: ""
+
+        // FIXED: use user-specific keys
+        val ageKey = "USER_AGE_$email"
+        val picKey = "USER_PROFILE_PIC_$email"
+
+        val age = sharedPref.getString(ageKey, "") ?: ""
 
         // Update the UI with the fetched username
         tvUsername.text = username
@@ -45,7 +50,7 @@ class UserProfileActivity : AppCompatActivity() {
         tvAgeValue.text = age
 
         // ADDED: load saved profile image (FIXED: file-based loading for persistence)
-        val savedImage = sharedPref.getString("USER_PROFILE_PIC", null)
+        val savedImage = sharedPref.getString(picKey, null)
 
         if (!savedImage.isNullOrEmpty()) {
             try {

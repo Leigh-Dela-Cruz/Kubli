@@ -61,7 +61,7 @@ class UpdatePasswordActivity : AppCompatActivity() {
                 if (password.matches(".*[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*".toRegex())) strengthScore++ // Symbols
 
                 // Extra point if very long to easily hit 100%
-                if (password.length >= 12 && strengthScore == 3) strengthScore = 4
+                if (password.length >= 8 && strengthScore == 3) strengthScore = 4
 
                 // Update UI based on score
                 when (strengthScore) {
