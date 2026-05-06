@@ -145,7 +145,12 @@ class Encodeimage : AppCompatActivity() {
                 try {
                     val bitmap: Bitmap? = withContext(Dispatchers.IO) {
                         try {
-                            decodeBitmap(createSource(contentResolver, uriParsed))
+                            val original = decodeBitmap(createSource(contentResolver, uriParsed))
+
+                            // FIX: force PNG-safe bitmap for LSB (prevents camera image corruption)
+                            val safeBitmap = original.copy(Bitmap.Config.ARGB_8888, true)
+
+                            safeBitmap
                         } catch (e: Exception) {
                             null
                         }

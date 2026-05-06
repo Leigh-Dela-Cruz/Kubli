@@ -16,6 +16,11 @@ import com.example.kubli.backend.SteganographyAPI
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.imageview.ShapeableImageView
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder.decodeBitmap
+import android.graphics.ImageDecoder.createSource
 
 class Decodeimage : AppCompatActivity() {
 
@@ -60,10 +65,29 @@ class Decodeimage : AppCompatActivity() {
 
         if (imageUriString != null) {
             val uriParsed = Uri.parse(imageUriString)
-            imgDecryptedResult.setImageURI(uriParsed)
 
             lifecycleScope.launch {
                 try {
+                    val bitmap: Bitmap? = withContext(Dispatchers.IO) {
+                        try {
+                            val original = decodeBitmap(createSource(contentResolver, uriParsed))
+
+                            // FIX: force PNG-safe bitmap (prevents crash on camera images)
+                            val safeBitmap = original.copy(Bitmap.Config.ARGB_8888, false)
+
+                            safeBitmap
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
+
+                    if (bitmap == null) {
+                        textDecodedResult.text = "Decoding failed: Unable to read image"
+                        return@launch
+                    }
+
+                    imgDecryptedResult.setImageBitmap(bitmap)
+
                     val api = SteganographyAPI(this@Decodeimage)
 
                     val result = try {
