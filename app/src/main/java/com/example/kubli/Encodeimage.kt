@@ -30,12 +30,30 @@ class Encodeimage : AppCompatActivity() {
 
     private suspend fun saveImageToGallery(bitmap: android.graphics.Bitmap) {
         //Set up the metadata for the image
-        val inputName = intent.getStringExtra("IMAGE_NAME") ?: "image"
-        val fileExtension = ".png"
+        val imageUriString = intent.getStringExtra("IMAGE_URI")
+        val imageUri = imageUriString?.let { Uri.parse(it) }
+
+        val inputName = try {
+            imageUri?.let { uri ->
+                var name: String? = null
+                contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                    val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (cursor.moveToFirst() && index != -1) {
+                        name = cursor.getString(index)
+                    }
+                }
+                name
+            }
+        } catch (e: Exception) {
+            null
+        } ?: "camera_image.jpg"
 
         val cleanName = inputName.substringBeforeLast(".").ifBlank { "image" }
+        val originalExt = inputName.substringAfterLast(".", "png")
+        val fileExtension = ".$originalExt"
 
-        val filename = "Kubli_Encoded_${cleanName}_${System.currentTimeMillis()}$fileExtension"
+        val randomSuffix = (1000..9999).random()
+        val filename = "${cleanName}_$randomSuffix$fileExtension"
         var outputStream: java.io.OutputStream? = null
 
         val contentValues = android.content.ContentValues().apply {

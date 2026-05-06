@@ -24,7 +24,7 @@ class EditProfileActivity : AppCompatActivity() {
     private fun saveImageToInternalStorage(uri: Uri): String? {
         return try {
             val inputStream = contentResolver.openInputStream(uri)
-            val file = File(filesDir, "profile.jpg")
+            val file = File(filesDir, "profile_${System.currentTimeMillis()}.jpg") // FIXED: unique per user image
             val outputStream = file.outputStream()
 
             inputStream?.copyTo(outputStream)
@@ -46,7 +46,6 @@ class EditProfileActivity : AppCompatActivity() {
         val btnBack = findViewById<ImageView>(R.id.btnBack)
         val btnSaveChanges = findViewById<MaterialButton>(R.id.btnSaveChanges)
         val etName = findViewById<EditText>(R.id.etName)
-        val etEmail = findViewById<EditText>(R.id.etEmail)
         val etAge = findViewById<EditText>(R.id.etAge)
         val ivProfilePic = findViewById<ImageView>(R.id.ivProfilePic)
 
@@ -54,11 +53,14 @@ class EditProfileActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
         val oldEmail = sharedPref.getString("USER_EMAIL", "") ?: ""
 
-        etName.setText(sharedPref.getString("USER_NAME", ""))
-        etEmail.setText(oldEmail)
-        etAge.setText(sharedPref.getString("USER_AGE", ""))
+        // FIXED: use user-specific keys
+        val ageKey = "USER_AGE_$oldEmail"
+        val picKey = "USER_PROFILE_PIC_$oldEmail"
 
-        val savedImage = sharedPref.getString("USER_PROFILE_PIC", null)
+        etName.setText(sharedPref.getString("USER_NAME", ""))
+        etAge.setText(sharedPref.getString(ageKey, ""))
+
+        val savedImage = sharedPref.getString(picKey, null)
 
         // FIXED: safer image loading (prevents crash + invalid URI)
         if (!savedImage.isNullOrEmpty()) {
@@ -88,16 +90,10 @@ class EditProfileActivity : AppCompatActivity() {
         // HANDLE SAVE CHANGES with Database integration
         btnSaveChanges.setOnClickListener {
             val newName = etName.text.toString().trim()
-            val newEmail = etEmail.text.toString().trim()
             val newAge = etAge.text.toString().trim().toIntOrNull() ?: 0
 
             if (newAge !in 1..120) {
                 Toast.makeText(this, "Enter a valid age", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (newName.isEmpty() || newEmail.isEmpty()) {
-                Toast.makeText(this, "Name and Email cannot be empty", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -111,7 +107,6 @@ class EditProfileActivity : AppCompatActivity() {
 
                     val updatedUser = userToUpdate.copy(
                         fullName = newName,
-                        email = newEmail,
                         age = newAge,
                         profileImagePath = imagePath // FIXED: safe nullable handling
                     )
@@ -124,14 +119,13 @@ class EditProfileActivity : AppCompatActivity() {
                         // SESSION ONLY (DO NOT STORE AGE OR IMAGE HERE)
                         editor.putString("CURRENT_USERNAME", newName)
                         editor.putString("USER_NAME", newName)
-                        editor.putString("USER_EMAIL", newEmail)
 
                         // FIXED: persist age separately so UI survives restart
-                        editor.putString("USER_AGE", newAge.toString())
+                        editor.putString(ageKey, newAge.toString())
 
                         // FIXED: only save image if available
                         imagePath?.let {
-                            editor.putString("USER_PROFILE_PIC", it)
+                            editor.putString(picKey, it)
                         }
 
                         editor.apply()

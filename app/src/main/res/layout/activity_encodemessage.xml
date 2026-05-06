@@ -169,7 +169,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:gravity="end"
-                        android:text="0/350"
+                        android:text="0/2000"
                         android:textColor="#9CA3AF"
                         android:textSize="12sp"
                         android:textStyle="bold" />
