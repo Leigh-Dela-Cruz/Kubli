@@ -39,7 +39,6 @@ class TermsAndConditionsActivity : AppCompatActivity() {
         textReadyDesc = findViewById(R.id.textReadyDesc)
         btnAccept = findViewById(R.id.btnAccept)
         textDecline = findViewById(R.id.textDecline)
-        btnDownload = findViewById(R.id.btnDownloadPdf)
 
 
         // Check if from the Settings screen
@@ -68,11 +67,6 @@ class TermsAndConditionsActivity : AppCompatActivity() {
         btnLanguage.setOnClickListener {
             isEnglish = !isEnglish
             updateUI()
-        }
-
-        // Download PDF Placeholder
-        btnDownload.setOnClickListener {
-            Toast.makeText(this, "Downloading Terms & Conditions PDF...", Toast.LENGTH_SHORT).show()
         }
 
         // Decline (Closes App or Activity)

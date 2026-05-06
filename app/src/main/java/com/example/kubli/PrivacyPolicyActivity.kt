@@ -39,7 +39,6 @@ class PrivacyPolicyActivity : AppCompatActivity() {
         textReadyDesc = findViewById(R.id.textReadyDesc)
         btnAccept = findViewById(R.id.btnAccept)
         textDecline = findViewById(R.id.textDecline)
-        btnDownload = findViewById(R.id.btnDownloadPdf)
 
         // Check if from the Settings screen
         val isFromSettings = intent.getBooleanExtra("IS_FROM_SETTINGS", false)
@@ -69,10 +68,6 @@ class PrivacyPolicyActivity : AppCompatActivity() {
             updateUI()
         }
 
-        //Download PDF
-        btnDownload.setOnClickListener {
-            Toast.makeText(this, "Downloading PDF...", Toast.LENGTH_SHORT).show()
-        }
 
         //Decline (Closes App or Activity)
         textDecline.paintFlags = textDecline.paintFlags or Paint.UNDERLINE_TEXT_FLAG

@@ -37,11 +37,6 @@ class Encodetext : AppCompatActivity() {
         txtOriginal.text = originalMessage
         val password = intent.getStringExtra("PASSWORD")?.takeIf { it.isNotBlank() } ?: "demo1234"
 
-        // Character counter
-        //val length = originalMessage.length.coerceAtMost(350)
-        //val charCounter = findViewById<TextView>(R.id.tvCharCounter)
-        //charCounter.text = "$length/350"
-
         fun runEncryption() {
             txtEncrypted.text = "Encoding text...please wait."
 

@@ -22,7 +22,6 @@ class SettingsActivity : AppCompatActivity() {
         val rowTerms = findViewById<RelativeLayout>(R.id.rowTerms)
         val rowPrivacy = findViewById<RelativeLayout>(R.id.rowPrivacy)
         val rowVersion = findViewById<RelativeLayout>(R.id.rowVersion)
-        val rowContact = findViewById<RelativeLayout>(R.id.rowContact)
 
         // Handle Back Navigation
         btnBack.setOnClickListener {
@@ -46,10 +45,6 @@ class SettingsActivity : AppCompatActivity() {
 
         rowVersion.setOnClickListener {
             Toast.makeText(this, "App Version 1.0.0", Toast.LENGTH_SHORT).show()
-        }
-
-        rowContact.setOnClickListener {
-            Toast.makeText(this, "Contact Us clicked", Toast.LENGTH_SHORT).show()
         }
 
         // BOTTOM NAVIGATION LOGIC

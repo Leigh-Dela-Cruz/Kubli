@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
@@ -218,43 +219,6 @@
 
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0"/>
 
-                    <RelativeLayout
-                        android:id="@+id/rowContact"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground"
-                        android:padding="12dp">
-
-                        <ImageView
-                            android:id="@+id/icMail"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:src="@drawable/ic_contactmail"
-                            app:tint="@color/kubli_btn_dark"
-                            android:background="@drawable/bg_rounded_icon"
-                            android:padding="8dp"
-                            android:layout_centerVertical="true"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Contact Us"
-                            android:textSize="16sp"
-                            android:textColor="#616161"
-                            android:layout_toEndOf="@id/icMail"
-                            android:layout_marginStart="16dp"
-                            android:layout_centerVertical="true"/>
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_chevron_right"
-                            app:tint="#9CA3AF"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"/>
-                    </RelativeLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -284,23 +248,26 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+`   </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:menu="@menu/bottom_nav_menu"
-            app:itemIconTint="@color/nav_item_colors"
-            app:itemTextColor="@color/nav_item_colors"
-            app:itemTextAppearanceActive="@style/BottomNavTextSize"
-            app:itemTextAppearanceInactive="@style/BottomNavTextSize"
-            app:labelVisibilityMode="selected"
-            app:itemIconSize="24dp"
-            app:itemPaddingTop="8dp"
-            app:itemPaddingBottom="8dp"
-            app:elevation="0dp" />
-
-    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/nav_item_colors"
+        app:itemTextColor="@color/nav_item_colors"
+        app:itemTextAppearanceActive="@style/BottomNavTextSize"
+        app:itemTextAppearanceInactive="@style/BottomNavTextSize"
+        app:labelVisibilityMode="selected"
+        app:itemIconSize="24dp"
+        app:itemPaddingTop="8dp"
+        app:itemPaddingBottom="8dp"
+        app:paddingBottomSystemWindowInsets="false"
+        app:elevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,11 +2,15 @@ package com.example.kubli
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
@@ -25,23 +29,66 @@ class SignupActivity : AppCompatActivity() {
             finish()
         }
 
+        val nameLayout = findViewById<TextInputLayout>(R.id.inputName)
+        val emailLayout = findViewById<TextInputLayout>(R.id.inputEmail)
+        val passLayout = findViewById<TextInputLayout>(R.id.inputPassword)
+
+        // Username max length real-time check
+        nameLayout.editText?.addTextChangedListener { text ->
+            if ((text?.length ?: 0) > 8) {
+                nameLayout.error = "Maximum 8 characters allowed"
+            } else {
+                nameLayout.error = null
+            }
+        }
+
+        // Password rules checklist setup
+        val passwordRulesContainer = findViewById<LinearLayout>(R.id.passwordRulesContainer)
+        val ruleLength = findViewById<TextView>(R.id.ruleLength)
+        val ruleUppercase = findViewById<TextView>(R.id.ruleUppercase)
+        val ruleNumber = findViewById<TextView>(R.id.ruleNumber)
+        val ruleSpecial = findViewById<TextView>(R.id.ruleSpecial)
+
+        // Show rules only when focusing on password field
+        passLayout.editText?.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                passwordRulesContainer.visibility = View.VISIBLE
+            }
+        }
+
+        // Active password strength check
+        passLayout.editText?.addTextChangedListener { text ->
+            val password = text.toString()
+
+            val hasLength = password.length >= 8
+            val hasUpper = password.any { it.isUpperCase() }
+            val hasNumber = password.any { it.isDigit() }
+            val hasSpecial = password.any { !it.isLetterOrDigit() }
+
+            updateRuleColor(ruleLength, hasLength)
+            updateRuleColor(ruleUppercase, hasUpper)
+            updateRuleColor(ruleNumber, hasNumber)
+            updateRuleColor(ruleSpecial, hasSpecial)
+        }
+
         // Create Account Button
         val btnCreate = findViewById<Button>(R.id.btnCreateAccount)
 
         btnCreate.setOnClickListener {
-            val nameLayout = findViewById<TextInputLayout>(R.id.inputName)
-            val emailLayout = findViewById<TextInputLayout>(R.id.inputEmail)
-            val passLayout = findViewById<TextInputLayout>(R.id.inputPassword)
-
             val name = nameLayout.editText?.text.toString().trim()
 
-            // FIXED: ensure consistent email format for login/signup matching
+            // ensure consistent email format for login/signup matching
             val email = emailLayout.editText?.text.toString().trim().lowercase()
 
             val password = passLayout.editText?.text.toString().trim()
 
             if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (name.length > 8) {
+                Toast.makeText(this, "Username must not exceed 8 characters", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -64,19 +111,13 @@ class SignupActivity : AppCompatActivity() {
             )
 
             val domain = email.substringAfter("@")
-
             if (domain !in allowedEmails) {
-                Toast.makeText(
-                    this,
-                    "Please use a valid email address",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this, "Please use a valid email address", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             // Validate password strength
-            val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$")
-
+            val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[_\\W-]).{8,}$")
             if (!passwordPattern.matches(password)) {
                 Toast.makeText(
                     this,
@@ -123,7 +164,7 @@ class SignupActivity : AppCompatActivity() {
                         putString("USER_NAME", name)
                         putString("USER_EMAIL", email)
                         putBoolean("IS_LOGGED_IN", true)
-                        commit() // Force instant save
+                        commit()
                     }
 
                     // Redirect directly to GettingStarted for new users
@@ -143,6 +184,16 @@ class SignupActivity : AppCompatActivity() {
         }
     }
 
+    // Update UI text color for password rules
+    private fun updateRuleColor(textView: TextView, isValid: Boolean) {
+        if (isValid) {
+            textView.setTextColor(Color.parseColor("#4CAF50"))
+        } else {
+            textView.setTextColor(Color.parseColor("#F44336"))
+        }
+    }
+
+    // Helper for password hashing
     private fun hashPassword(password: String): String {
         val bytes = MessageDigest.getInstance("SHA-256").digest(password.toByteArray())
         return bytes.joinToString("") { "%02x".format(it) }

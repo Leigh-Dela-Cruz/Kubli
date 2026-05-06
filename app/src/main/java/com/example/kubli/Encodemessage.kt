@@ -70,10 +70,10 @@ class Encodemessage : AppCompatActivity() {
                 val currentLength = s?.length ?: 0
 
                 // Update the numbers on the screen
-                tvCharCounter.text = "$currentLength/350"
+                tvCharCounter.text = "$currentLength/2000"
 
                 //Shows error if text is over 350 characters
-                if (currentLength > 350) {
+                if (currentLength > 2000) {
                     tvCharCounter.setTextColor(Color.RED)
                 } else {
                     tvCharCounter.setTextColor(Color.parseColor("#9CA3AF"))
@@ -107,9 +107,8 @@ class Encodemessage : AppCompatActivity() {
         // Hide Message Button
         btnHide.setOnClickListener {
             val message = inputText.text.toString().trim()
-            // 350 characters limit for text input
-            if (message.length > 350) {
-                Toast.makeText(this, "Text must not exceed 350 characters.", Toast.LENGTH_SHORT).show()
+            if (message.length > 2000) {
+                Toast.makeText(this, "Text must not exceed 2000 characters.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             val password = inputPassword.text.toString().trim() // Grab the password text

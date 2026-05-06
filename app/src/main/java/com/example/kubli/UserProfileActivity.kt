@@ -33,7 +33,7 @@ class UserProfileActivity : AppCompatActivity() {
 
         // FETCH USERNAME FROM SESSION (Matches HomeActivity logic)
         val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
-        val username = sharedPref.getString("CURRENT_USERNAME", "Username") ?: "Username"
+        val username = sharedPref.getString("USER_NAME", "Username") ?: "Username"
         val name = sharedPref.getString("USER_NAME", "Username") ?: "Username"
         val email = sharedPref.getString("USER_EMAIL", "Username@email.com") ?: "Username@email.com"
         val age = sharedPref.getString("USER_AGE", "") ?: ""

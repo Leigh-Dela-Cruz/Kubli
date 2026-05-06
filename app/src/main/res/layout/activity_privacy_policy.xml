@@ -99,21 +99,7 @@
             app:layout_constraintTop_toBottomOf="@+id/btnLanguage"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_download"
-                app:tint="#8A3FFC"
-                android:layout_marginEnd="6dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Download As PDF"
-                android:textColor="#8A3FFC"
-                android:textStyle="bold"
-                android:textSize="13sp" />
+            
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

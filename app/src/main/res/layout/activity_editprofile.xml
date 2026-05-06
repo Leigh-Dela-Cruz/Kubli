@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
@@ -35,6 +36,7 @@
         android:background="#E0E0E0"
         app:layout_constraintTop_toBottomOf="@id/btnBack" />
 
+    <!-- FIXED: perfectly circular, no clipping -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/ivProfilePic"
         android:layout_width="100dp"
@@ -42,12 +44,26 @@
         android:layout_marginTop="32dp"
         android:background="#E0E0E0"
         android:src="@drawable/ic_placeholder_c"
+        android:scaleType="centerCrop"
+        android:padding="2dp"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
         app:strokeColor="#8A2BE2"
         app:strokeWidth="2dp"
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- NEW: Edit profile picture icon pinned to the bottom right of the image -->
+    <ImageView
+        android:id="@+id/btnEditProfilePic"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_edit_pencil"
+        android:background="@drawable/circle_purple_bg"
+        android:padding="6dp"
+        android:elevation="2dp"
+        app:layout_constraintBottom_toBottomOf="@id/ivProfilePic"
+        app:layout_constraintEnd_toEndOf="@id/ivProfilePic" />
 
     <TextView
         android:id="@+id/tvUsername"
@@ -121,36 +137,6 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#E0E0E0"
-                android:layout_marginBottom="8dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="E-mail"
-                android:textSize="12sp"
-                android:textColor="#808080"/>
-
-            <EditText
-                android:id="@+id/etEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:background="@drawable/bg_dashed_gray"
-                android:gravity="center_vertical"
-                android:padding="12dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#E0E0E0"
-                android:layout_marginBottom="8dp"/>
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -197,22 +183,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:menu="@menu/bottom_nav_menu"
-            app:itemIconTint="@color/nav_item_colors"
-            app:itemTextColor="@color/nav_item_colors"
-            app:itemTextAppearanceActive="@style/BottomNavTextSize"
-            app:itemTextAppearanceInactive="@style/BottomNavTextSize"
-            app:labelVisibilityMode="selected"
-            app:itemIconSize="24dp"
-            app:itemPaddingTop="8dp"
-            app:itemPaddingBottom="8dp"
-            app:elevation="0dp" />
-
     </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/nav_item_colors"
+        app:itemTextColor="@color/nav_item_colors"
+        app:itemTextAppearanceActive="@style/BottomNavTextSize"
+        app:itemTextAppearanceInactive="@style/BottomNavTextSize"
+        app:labelVisibilityMode="selected"
+        app:itemIconSize="24dp"
+        app:itemPaddingTop="8dp"
+        app:itemPaddingBottom="8dp"
+        app:paddingBottomSystemWindowInsets="false"
+        app:elevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
