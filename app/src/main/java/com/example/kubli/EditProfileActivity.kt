@@ -24,7 +24,7 @@ class EditProfileActivity : AppCompatActivity() {
     private fun saveImageToInternalStorage(uri: Uri): String? {
         return try {
             val inputStream = contentResolver.openInputStream(uri)
-            val file = File(filesDir, "profile.jpg")
+            val file = File(filesDir, "profile_${System.currentTimeMillis()}.jpg") // FIXED: unique per user image
             val outputStream = file.outputStream()
 
             inputStream?.copyTo(outputStream)
@@ -53,10 +53,14 @@ class EditProfileActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
         val oldEmail = sharedPref.getString("USER_EMAIL", "") ?: ""
 
-        etName.setText(sharedPref.getString("USER_NAME", ""))
-        etAge.setText(sharedPref.getString("USER_AGE", ""))
+        // FIXED: use user-specific keys
+        val ageKey = "USER_AGE_$oldEmail"
+        val picKey = "USER_PROFILE_PIC_$oldEmail"
 
-        val savedImage = sharedPref.getString("USER_PROFILE_PIC", null)
+        etName.setText(sharedPref.getString("USER_NAME", ""))
+        etAge.setText(sharedPref.getString(ageKey, ""))
+
+        val savedImage = sharedPref.getString(picKey, null)
 
         // FIXED: safer image loading (prevents crash + invalid URI)
         if (!savedImage.isNullOrEmpty()) {
@@ -93,7 +97,6 @@ class EditProfileActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-
             lifecycleScope.launch(Dispatchers.IO) {
                 val db = AppDatabase.getDatabase(applicationContext)
                 val userToUpdate = db.userDao().getUserByEmail(oldEmail)
@@ -118,11 +121,11 @@ class EditProfileActivity : AppCompatActivity() {
                         editor.putString("USER_NAME", newName)
 
                         // FIXED: persist age separately so UI survives restart
-                        editor.putString("USER_AGE", newAge.toString())
+                        editor.putString(ageKey, newAge.toString())
 
                         // FIXED: only save image if available
                         imagePath?.let {
-                            editor.putString("USER_PROFILE_PIC", it)
+                            editor.putString(picKey, it)
                         }
 
                         editor.apply()
