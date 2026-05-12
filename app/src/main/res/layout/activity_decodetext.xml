@@ -10,16 +10,16 @@
     tools:context=".Decodetext">
 
     <ImageView
-    android:id="@+id/btnMenuBack"
-    android:layout_width="32dp"
-    android:layout_height="32dp"
-    android:src="@drawable/ic_arrow_back"
-    app:tint="#8A3FFC"
-    android:padding="4dp"
-    android:layout_marginStart="24dp"
-    android:layout_marginTop="24dp"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/btnMenuBack"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_arrow_back"
+        app:tint="#8A3FFC"
+        android:padding="4dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textTitle"
@@ -76,32 +76,52 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_dashed_gray"
-                android:padding="16dp"
-                android:minHeight="100dp">
+                android:padding="16dp">
 
-                <TextView
-                    android:id="@+id/txtInputMessage"
+                <!-- UPGRADED: NestedScrollView + Wrapper for Original Text -->
+                <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:text="This is the original text to be decoded...."
-                    android:textColor="#BABABA"
-                    android:textSize="14sp"/>
+                    android:layout_height="120dp"
+                    android:fillViewport="true"
+                    android:scrollbars="vertical"
+                    android:scrollbarStyle="insideInset"
+                    android:overScrollMode="always">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingBottom="24dp">
+
+                        <TextView
+                            android:id="@+id/txtInputMessage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:text="This is the original text to be decoded...."
+                            android:textColor="#BABABA"
+                            android:textSize="14sp"/>
+                    </LinearLayout>
+                </androidx.core.widget.NestedScrollView>
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- FIXED CONSTRAINTS: Added constraintBottom_toTopOf to prevent overlap -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/containerEncrypted"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="16dp"
         app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="24dp"
         app:cardElevation="0dp"
         app:strokeWidth="1dp"
         app:strokeColor="#E5E7EB"
-        app:layout_constraintTop_toBottomOf="@+id/containerOriginal">
+        app:layout_constraintTop_toBottomOf="@+id/containerOriginal"
+        app:layout_constraintBottom_toTopOf="@+id/btnStartNewTask"
+        app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -123,17 +143,34 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_dashed_gray"
                 android:orientation="vertical"
-                android:padding="16dp"
-                android:minHeight="150dp">
+                android:padding="16dp">
 
-                <TextView
-                    android:id="@+id/txtDecodedMessage"
+                <!-- UPGRADED: NestedScrollView + Wrapper for Decoded Text -->
+                <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Decoding text... please wait."
-                    android:textColor="#1F2937"
-                    android:textSize="14sp"
-                    android:textStyle="bold"/>
+                    android:layout_height="150dp"
+                    android:fillViewport="true"
+                    android:scrollbars="vertical"
+                    android:scrollbarStyle="insideInset"
+                    android:overScrollMode="always">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingBottom="32dp">
+
+                        <TextView
+                            android:id="@+id/txtDecodedMessage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Decoding text... please wait."
+                            android:textColor="#1F2937"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textIsSelectable="true"/>
+                    </LinearLayout>
+                </androidx.core.widget.NestedScrollView>
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
