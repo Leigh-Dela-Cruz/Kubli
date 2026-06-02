@@ -26,6 +26,16 @@ class SteganographyAPI(
         useViterbi = useViterbi
     )
 
+    fun encryptBlocking(text: String, password: String) =
+        kotlinx.coroutines.runBlocking {
+            encrypt(text, password)
+        }
+
+    fun decryptBlocking(text: String, password: String) =
+        kotlinx.coroutines.runBlocking {
+            decrypt(text, password)
+        }
+
     // This function hides a secret message inside a generated sentence.
     suspend fun encrypt(secret: String, password: String): EncryptResult =
         // Run this in the background so the app screen doesn't freeze.

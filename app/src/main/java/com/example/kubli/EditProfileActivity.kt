@@ -57,6 +57,7 @@ class EditProfileActivity : AppCompatActivity() {
         val ageKey = "USER_AGE_$oldEmail"
         val picKey = "USER_PROFILE_PIC_$oldEmail"
 
+        etName.filters = arrayOf(android.text.InputFilter.LengthFilter(8))
         etName.setText(sharedPref.getString("USER_NAME", ""))
         etAge.setText(sharedPref.getString(ageKey, ""))
 
@@ -90,9 +91,15 @@ class EditProfileActivity : AppCompatActivity() {
         // HANDLE SAVE CHANGES with Database integration
         btnSaveChanges.setOnClickListener {
             val newName = etName.text.toString().trim()
+
+            if (newName.length > 8) {
+                Toast.makeText(this, "Username must not exceed 8 characters", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val newAge = etAge.text.toString().trim().toIntOrNull() ?: 0
 
-            if (newAge !in 1..120) {
+            if (newAge !in 18..120) {
                 Toast.makeText(this, "Enter a valid age", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
