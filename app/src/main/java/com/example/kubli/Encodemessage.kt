@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.graphics.Color
+import android.text.InputFilter
 
 class Encodemessage : AppCompatActivity() {
 
@@ -59,6 +60,8 @@ class Encodemessage : AppCompatActivity() {
         val btnInfo = findViewById<ImageView>(R.id.btnInfo)
         val textInfoDesc = findViewById<TextView>(R.id.textInfoDesc)
         val inputPassword = findViewById<EditText>(R.id.inputPassword)
+
+        inputPassword.filters = arrayOf(InputFilter.LengthFilter(8))
 
         //LIVE CHARACTER COUNTER LOGIC
         inputText.addTextChangedListener(object : TextWatcher {

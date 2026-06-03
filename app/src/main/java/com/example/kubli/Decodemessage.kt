@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import android.text.InputFilter
 
 class Decodemessage : AppCompatActivity() {
 
@@ -53,6 +54,8 @@ class Decodemessage : AppCompatActivity() {
         val btnInfo = findViewById<ImageView>(R.id.btnInfo)
         val textInfoDesc = findViewById<TextView>(R.id.textInfoDesc)
         val inputPassword = findViewById<EditText>(R.id.inputPassword)
+
+        inputPassword.filters = arrayOf(InputFilter.LengthFilter(8))
 
         // Back Button
         btnMenu.setOnClickListener {
