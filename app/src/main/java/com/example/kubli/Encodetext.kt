@@ -33,7 +33,7 @@ class Encodetext : AppCompatActivity() {
 
         //Receive data from previous activity
         // We get the string we sent using the key "ORIGINAL_TEXT"
-        val originalMessage = (intent.getStringExtra("ORIGINAL_TEXT") ?: "").take(350)
+        val originalMessage = (intent.getStringExtra("ORIGINAL_TEXT") ?: "")
         txtOriginal.text = originalMessage
         val password = intent.getStringExtra("PASSWORD")?.takeIf { it.isNotBlank() } ?: "demo1234"
 
