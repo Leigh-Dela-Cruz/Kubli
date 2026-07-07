@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -29,9 +31,39 @@ class SignupActivity : AppCompatActivity() {
             finish()
         }
 
+        // Standard Input Bindings
         val nameLayout = findViewById<TextInputLayout>(R.id.inputName)
         val emailLayout = findViewById<TextInputLayout>(R.id.inputEmail)
         val passLayout = findViewById<TextInputLayout>(R.id.inputPassword)
+
+        // Dropdown View Bindings
+        val actvProfession = findViewById<AutoCompleteTextView>(R.id.actvProfession)
+        val actvSpecialization = findViewById<AutoCompleteTextView>(R.id.actvSpecialization)
+        val menuSpecialization = findViewById<TextInputLayout>(R.id.menuSpecialization)
+
+        //Setup Profession Dropdown
+        val professionsList = listOf("Journalist", "Student", "Teacher", "Other")
+        val professionAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, professionsList)
+        actvProfession.setAdapter(professionAdapter)
+
+        //Setup Specialization Dropdown
+        val specializationList = listOf("Investigative", "Broadcast", "Sports", "Photojournalism", "Editorial")
+        val specializationAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, specializationList)
+        actvSpecialization.setAdapter(specializationAdapter)
+
+        //Dropdown Visibility Logic
+        actvProfession.setOnItemClickListener { parent, _, position, _ ->
+            val selectedProfession = parent.getItemAtPosition(position).toString()
+
+            if (selectedProfession == "Journalist") {
+                // Show the Specialization box
+                menuSpecialization.visibility = View.VISIBLE
+            } else {
+                // Hide the box and clear old data if they switch away
+                menuSpecialization.visibility = View.GONE
+                actvSpecialization.text.clear()
+            }
+        }
 
         // Username max length real-time check
         nameLayout.editText?.addTextChangedListener { text ->
@@ -76,14 +108,28 @@ class SignupActivity : AppCompatActivity() {
 
         btnCreate.setOnClickListener {
             val name = nameLayout.editText?.text.toString().trim()
-
-            // ensure consistent email format for login/signup matching
             val email = emailLayout.editText?.text.toString().trim().lowercase()
-
             val password = passLayout.editText?.text.toString().trim()
 
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+            // Extract Dropdown Values
+            val selectedProfession = actvProfession.text.toString().trim()
+            var selectedSpecialization = actvSpecialization.text.toString().trim()
+
+            // Ensure specialization is blank if they aren't a journalist
+            if (selectedProfession != "Journalist") {
+                selectedSpecialization = ""
+            }
+
+            // --- Validations
+
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || selectedProfession.isEmpty()) {
+                Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Specific validation: if Journalist is chosen, specialization is required
+            if (selectedProfession == "Journalist" && selectedSpecialization.isEmpty()) {
+                Toast.makeText(this, "Please select a journalism specialization", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -116,7 +162,6 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Validate password strength
             val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[_\\W-]).{8,}$")
             if (!passwordPattern.matches(password)) {
                 Toast.makeText(
@@ -127,7 +172,7 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Database Operations
+            // --- Database Operations ---
             lifecycleScope.launch {
                 val db = AppDatabase.getDatabase(applicationContext)
 
@@ -142,22 +187,21 @@ class SignupActivity : AppCompatActivity() {
                     // Hash Password & Insert User
                     val securePassword = hashPassword(password)
 
+                    // Pass the newly extracted variables to the User object
                     val newUser = User(
                         fullName = name,
                         email = email,
                         passwordHash = securePassword,
-                        age = null
+                        age = null,
+                        profession = selectedProfession,
+                        specialization = selectedSpecialization
                     )
 
                     db.userDao().insertUser(newUser)
 
-                    // DEBUG CHECK (does not affect logic)
-                    val testUser = db.userDao().getUserByEmail(email)
-                    android.util.Log.d("SIGNUP_DEBUG", "Inserted user = $testUser")
-
                     Toast.makeText(this@SignupActivity, "Account Created!", Toast.LENGTH_SHORT).show()
 
-                    // bug1 fix: save sessions:
+                    // Save sessions
                     val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
                     with(sharedPref.edit()) {
                         putString("CURRENT_USERNAME", name)
