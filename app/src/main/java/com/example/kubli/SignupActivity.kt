@@ -13,10 +13,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.launch
 import java.security.MessageDigest
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class SignupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -172,59 +172,66 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // --- Database Operations ---
-            lifecycleScope.launch {
-                val db = AppDatabase.getDatabase(applicationContext)
+            // --- Firebase Signup ---
+            val auth = FirebaseAuth.getInstance()
+            val firestore = FirebaseFirestore.getInstance()
 
-                try {
-                    val existingUser = db.userDao().getUserByEmail(email)
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener { result ->
 
-                    if (existingUser != null) {
-                        Toast.makeText(this@SignupActivity, "Email already exists!", Toast.LENGTH_SHORT).show()
-                        return@launch
-                    }
+                    val uid = result.user!!.uid
 
-                    // Hash Password & Insert User
-                    val securePassword = hashPassword(password)
-
-                    // Pass the newly extracted variables to the User object
-                    val newUser = User(
-                        fullName = name,
-                        email = email,
-                        passwordHash = securePassword,
-                        age = null,
-                        profession = selectedProfession,
-                        specialization = selectedSpecialization
+                    val userData = hashMapOf(
+                        "fullName" to name,
+                        "email" to email,
+                        "profession" to selectedProfession,
+                        "specialization" to selectedSpecialization,
+                        "role" to "user"
                     )
 
-                    db.userDao().insertUser(newUser)
+                    firestore.collection("users")
+                        .document(uid)
+                        .set(userData)
+                        .addOnSuccessListener {
 
-                    Toast.makeText(this@SignupActivity, "Account Created!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this,
+                                "Account Created!",
+                                Toast.LENGTH_SHORT
+                            ).show()
 
-                    // Save sessions
-                    val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
-                    with(sharedPref.edit()) {
-                        putString("CURRENT_USERNAME", name)
-                        putString("USER_NAME", name)
-                        putString("USER_EMAIL", email)
-                        putBoolean("IS_LOGGED_IN", true)
-                        commit()
-                    }
+                            val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
+                            with(sharedPref.edit()) {
+                                putString("CURRENT_USERNAME", name)
+                                putString("USER_NAME", name)
+                                putString("USER_EMAIL", email)
+                                putBoolean("IS_LOGGED_IN", true)
+                                apply()
+                            }
 
-                    // Redirect directly to GettingStarted for new users
-                    val intent = Intent(this@SignupActivity, GettingStartedActivity::class.java)
-                    startActivity(intent)
-                    finish()
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                            startActivity(
+                                Intent(
+                                    this,
+                                    GettingStartedActivity::class.java
+                                )
+                            )
+                            finish()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(
+                                this,
+                                "Failed to save user information.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                }
+                .addOnFailureListener { e ->
                     Toast.makeText(
-                        this@SignupActivity,
-                        "Signup failed. Please try again.",
+                        this,
+                        e.localizedMessage ?: "Signup failed.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            }
         }
     }
 

@@ -8,6 +8,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,6 +16,9 @@ class MainActivity : AppCompatActivity() {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.splash_screen)
+
+        val auth = FirebaseAuth.getInstance()
+        println("Firebase Auth initialized: $auth")
 
         // ADDED: Check session before navigating
         val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)

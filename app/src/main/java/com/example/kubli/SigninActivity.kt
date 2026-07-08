@@ -8,10 +8,10 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.launch
-import java.security.MessageDigest
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 class SigninActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,73 +51,106 @@ class SigninActivity : AppCompatActivity() {
 
             val inputEmail = inputRaw.lowercase()
 
-            // Database Verification
-            lifecycleScope.launch {
-                val db = AppDatabase.getDatabase(applicationContext)
+            // Firebase Login Verification
+            val auth = FirebaseAuth.getInstance()
+            val firestore = FirebaseFirestore.getInstance()
 
-                val user = try {
-                    val emailUser = db.userDao().getUserByEmail(inputEmail)
+            auth.signInWithEmailAndPassword(inputEmail, password)
+                .addOnSuccessListener {
 
-                    if (emailUser != null) {
-                        emailUser
-                    } else {
-                        // IMPORTANT FIX: avoid breaking username matching due to casing
-                        db.userDao().getUserByName(inputRaw)
-                    }
+                    val uid = auth.currentUser!!.uid
 
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    null
-                }
+                    firestore.collection("users")
+                        .document(uid)
+                        .get()
+                        .addOnSuccessListener { document ->
 
-                if (user != null) {
-                    val inputHash = hashPassword(password)
+                            if (document.exists()) {
 
-                    if (inputHash == user.passwordHash) {
+                                val name = document.getString("fullName") ?: "User"
+                                val email = document.getString("email") ?: inputEmail
+                                val role = document.getString("role") ?: "user"
 
-                        // Login Success
-                        Toast.makeText(this@SigninActivity, "Login Successful", Toast.LENGTH_SHORT).show()
+                                val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
 
-                        // Save User Session (UPDATED TO INCLUDE EMAIL AND PROFILE NAME)
-                        val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
-                        with(sharedPref.edit()) {
-                            putString("CURRENT_USERNAME", user.fullName) // Used for Home Screen
-                            putString("USER_NAME", user.fullName)        // Used for Profile Screen
-                            putString("USER_EMAIL", user.email)          // Used for Profile Screen
-                            putBoolean("IS_LOGGED_IN", true)
-                            apply()
+                                with(sharedPref.edit()) {
+                                    putString("CURRENT_USERNAME", name)
+                                    putString("USER_NAME", name)
+                                    putString("USER_EMAIL", email)
+                                    putBoolean("IS_LOGGED_IN", true)
+                                    putBoolean("IS_ADMIN", role == "admin")
+                                    apply()
+                                }
+
+
+                                emailLayout.error = null
+                                passLayout.error = null
+
+
+                                if (role == "admin") {
+
+                                    Toast.makeText(
+                                        this,
+                                        "Admin Login Successful",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
+                                    startActivity(
+                                        Intent(
+                                            this,
+                                            AdminDashboardActivity::class.java
+                                        )
+                                    )
+
+                                } else {
+
+                                    Toast.makeText(
+                                        this,
+                                        "Login Successful",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+
+
+                                    val isNewUser =
+                                        intent.getBooleanExtra("IS_NEW_USER", false)
+
+                                    if (isNewUser) {
+
+                                        startActivity(
+                                            Intent(
+                                                this,
+                                                LandingActivity::class.java
+                                            )
+                                        )
+
+                                    } else {
+
+                                        startActivity(
+                                            Intent(
+                                                this,
+                                                HomeActivity::class.java
+                                            )
+                                        )
+                                    }
+                                }
+
+                                finish()
+
+                            } else {
+                                Toast.makeText(
+                                    this,
+                                    "User data not found",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
 
-                        // CLEAR ERRORS (prevents UI bug after success)
-                        emailLayout.error = null
-                        passLayout.error = null
-
-                        // CHECK ROUTE: New User vs Returning User
-                        val isNewUser = intent.getBooleanExtra("IS_NEW_USER", false)
-
-                        if (isNewUser) {
-                            // New User -> Go to Landing (Onboarding)
-                            val intent = Intent(this@SigninActivity, LandingActivity::class.java)
-                            startActivity(intent)
-                        } else {
-                            // Returning User -> Go to Dashboard directly
-                            val intent = Intent(this@SigninActivity, HomeActivity::class.java)
-                            startActivity(intent)
-                        }
-                        finish()
-
-                    } else {
-                        passLayout.error = "Incorrect Password"
-                    }
-                } else {
-                    emailLayout.error = "User not found"
                 }
-            }
+                .addOnFailureListener {
+
+                    passLayout.error = "Incorrect Email or Password"
+
+                }
         }
-    }
-
-    private fun hashPassword(password: String): String {
-        val bytes = MessageDigest.getInstance("SHA-256").digest(password.toByteArray())
-        return bytes.joinToString("") { "%02x".format(it) }
     }
 }
