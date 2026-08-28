@@ -10,5 +10,7 @@ data class User(
     val email: String,
     val passwordHash: String,
     val age: Int? = null,
-    var profileImagePath: String? = null
+    var profileImagePath: String? = null,
+    val profession: String? = null,
+    val specialization: String? = null
 )

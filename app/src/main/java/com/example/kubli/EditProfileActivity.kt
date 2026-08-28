@@ -11,9 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 
 class EditProfileActivity : AppCompatActivity() {
@@ -104,50 +102,85 @@ class EditProfileActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            lifecycleScope.launch(Dispatchers.IO) {
-                val db = AppDatabase.getDatabase(applicationContext)
-                val userToUpdate = db.userDao().getUserByEmail(oldEmail)
+            lifecycleScope.launch {
 
-                if (userToUpdate != null) {
+                val imagePath = selectedImageUri?.let {
+                    saveImageToInternalStorage(it)
+                }
 
-                    val imagePath = selectedImageUri?.let { saveImageToInternalStorage(it) }
+                val uid = com.google.firebase.auth.FirebaseAuth
+                    .getInstance()
+                    .currentUser
+                    ?.uid
 
-                    val updatedUser = userToUpdate.copy(
-                        fullName = newName,
-                        age = newAge,
-                        profileImagePath = imagePath // FIXED: safe nullable handling
+                if (uid != null) {
+
+                    val updates = hashMapOf<String, Any>(
+                        "fullName" to newName,
+                        "age" to newAge
                     )
 
-                    db.userDao().updateUser(updatedUser)
-
-                    withContext(Dispatchers.Main) {
-                        val editor = sharedPref.edit()
-
-                        // SESSION ONLY (DO NOT STORE AGE OR IMAGE HERE)
-                        editor.putString("CURRENT_USERNAME", newName)
-                        editor.putString("USER_NAME", newName)
-
-                        // FIXED: persist age separately so UI survives restart
-                        editor.putString(ageKey, newAge.toString())
-
-                        // FIXED: only save image if available
-                        imagePath?.let {
-                            editor.putString(picKey, it)
-                        }
-
-                        editor.apply()
-
-                        Toast.makeText(
-                            this@EditProfileActivity,
-                            "Profile updated successfully!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        val intent = Intent(this@EditProfileActivity, UserProfileActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        startActivity(intent)
-                        finish()
+                    imagePath?.let {
+                        updates["profileImagePath"] = it
                     }
+
+
+                    com.google.firebase.firestore.FirebaseFirestore
+                        .getInstance()
+                        .collection("users")
+                        .document(uid)
+                        .update(updates)
+                        .addOnSuccessListener {
+
+
+                            val editor = sharedPref.edit()
+
+                            editor.putString(
+                                "CURRENT_USERNAME",
+                                newName
+                            )
+
+                            editor.putString(
+                                "USER_NAME",
+                                newName
+                            )
+
+                            editor.putString(
+                                ageKey,
+                                newAge.toString()
+                            )
+
+
+                            imagePath?.let {
+                                editor.putString(
+                                    picKey,
+                                    it
+                                )
+                            }
+
+
+                            editor.apply()
+
+
+                            Toast.makeText(
+                                this@EditProfileActivity,
+                                "Profile updated successfully!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+
+                            val intent = Intent(
+                                this@EditProfileActivity,
+                                UserProfileActivity::class.java
+                            )
+
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP
+
+                            startActivity(intent)
+                            finish()
+
+                        }
                 }
             }
         }

@@ -5,16 +5,18 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.launch
 import java.security.MessageDigest
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class SignupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,9 +31,39 @@ class SignupActivity : AppCompatActivity() {
             finish()
         }
 
+        // Standard Input Bindings
         val nameLayout = findViewById<TextInputLayout>(R.id.inputName)
         val emailLayout = findViewById<TextInputLayout>(R.id.inputEmail)
         val passLayout = findViewById<TextInputLayout>(R.id.inputPassword)
+
+        // Dropdown View Bindings
+        val actvProfession = findViewById<AutoCompleteTextView>(R.id.actvProfession)
+        val actvSpecialization = findViewById<AutoCompleteTextView>(R.id.actvSpecialization)
+        val menuSpecialization = findViewById<TextInputLayout>(R.id.menuSpecialization)
+
+        //Setup Profession Dropdown
+        val professionsList = listOf("Journalist", "Student", "Teacher", "Other")
+        val professionAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, professionsList)
+        actvProfession.setAdapter(professionAdapter)
+
+        //Setup Specialization Dropdown
+        val specializationList = listOf("Investigative", "Broadcast", "Sports", "Photojournalism", "Editorial")
+        val specializationAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, specializationList)
+        actvSpecialization.setAdapter(specializationAdapter)
+
+        //Dropdown Visibility Logic
+        actvProfession.setOnItemClickListener { parent, _, position, _ ->
+            val selectedProfession = parent.getItemAtPosition(position).toString()
+
+            if (selectedProfession == "Journalist") {
+                // Show the Specialization box
+                menuSpecialization.visibility = View.VISIBLE
+            } else {
+                // Hide the box and clear old data if they switch away
+                menuSpecialization.visibility = View.GONE
+                actvSpecialization.text.clear()
+            }
+        }
 
         // Username max length real-time check
         nameLayout.editText?.addTextChangedListener { text ->
@@ -76,14 +108,28 @@ class SignupActivity : AppCompatActivity() {
 
         btnCreate.setOnClickListener {
             val name = nameLayout.editText?.text.toString().trim()
-
-            // ensure consistent email format for login/signup matching
             val email = emailLayout.editText?.text.toString().trim().lowercase()
-
             val password = passLayout.editText?.text.toString().trim()
 
-            if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+            // Extract Dropdown Values
+            val selectedProfession = actvProfession.text.toString().trim()
+            var selectedSpecialization = actvSpecialization.text.toString().trim()
+
+            // Ensure specialization is blank if they aren't a journalist
+            if (selectedProfession != "Journalist") {
+                selectedSpecialization = ""
+            }
+
+            // --- Validations
+
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || selectedProfession.isEmpty()) {
+                Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Specific validation: if Journalist is chosen, specialization is required
+            if (selectedProfession == "Journalist" && selectedSpecialization.isEmpty()) {
+                Toast.makeText(this, "Please select a journalism specialization", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -116,7 +162,6 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Validate password strength
             val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[_\\W-]).{8,}$")
             if (!passwordPattern.matches(password)) {
                 Toast.makeText(
@@ -127,60 +172,66 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Database Operations
-            lifecycleScope.launch {
-                val db = AppDatabase.getDatabase(applicationContext)
+            // --- Firebase Signup ---
+            val auth = FirebaseAuth.getInstance()
+            val firestore = FirebaseFirestore.getInstance()
 
-                try {
-                    val existingUser = db.userDao().getUserByEmail(email)
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener { result ->
 
-                    if (existingUser != null) {
-                        Toast.makeText(this@SignupActivity, "Email already exists!", Toast.LENGTH_SHORT).show()
-                        return@launch
-                    }
+                    val uid = result.user!!.uid
 
-                    // Hash Password & Insert User
-                    val securePassword = hashPassword(password)
-
-                    val newUser = User(
-                        fullName = name,
-                        email = email,
-                        passwordHash = securePassword,
-                        age = null
+                    val userData = hashMapOf(
+                        "fullName" to name,
+                        "email" to email,
+                        "profession" to selectedProfession,
+                        "specialization" to selectedSpecialization,
+                        "role" to "user"
                     )
 
-                    db.userDao().insertUser(newUser)
+                    firestore.collection("users")
+                        .document(uid)
+                        .set(userData)
+                        .addOnSuccessListener {
 
-                    // DEBUG CHECK (does not affect logic)
-                    val testUser = db.userDao().getUserByEmail(email)
-                    android.util.Log.d("SIGNUP_DEBUG", "Inserted user = $testUser")
+                            Toast.makeText(
+                                this,
+                                "Account Created!",
+                                Toast.LENGTH_SHORT
+                            ).show()
 
-                    Toast.makeText(this@SignupActivity, "Account Created!", Toast.LENGTH_SHORT).show()
+                            val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
+                            with(sharedPref.edit()) {
+                                putString("CURRENT_USERNAME", name)
+                                putString("USER_NAME", name)
+                                putString("USER_EMAIL", email)
+                                putBoolean("IS_LOGGED_IN", true)
+                                apply()
+                            }
 
-                    // bug1 fix: save sessions:
-                    val sharedPref = getSharedPreferences("KubliSession", Context.MODE_PRIVATE)
-                    with(sharedPref.edit()) {
-                        putString("CURRENT_USERNAME", name)
-                        putString("USER_NAME", name)
-                        putString("USER_EMAIL", email)
-                        putBoolean("IS_LOGGED_IN", true)
-                        commit()
-                    }
-
-                    // Redirect directly to GettingStarted for new users
-                    val intent = Intent(this@SignupActivity, GettingStartedActivity::class.java)
-                    startActivity(intent)
-                    finish()
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                            startActivity(
+                                Intent(
+                                    this,
+                                    GettingStartedActivity::class.java
+                                )
+                            )
+                            finish()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(
+                                this,
+                                "Failed to save user information.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                }
+                .addOnFailureListener { e ->
                     Toast.makeText(
-                        this@SignupActivity,
-                        "Signup failed. Please try again.",
+                        this,
+                        e.localizedMessage ?: "Signup failed.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-            }
         }
     }
 

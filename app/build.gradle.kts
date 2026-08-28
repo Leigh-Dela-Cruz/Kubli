@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -59,4 +61,9 @@ dependencies {
 
     // Coroutines
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 }

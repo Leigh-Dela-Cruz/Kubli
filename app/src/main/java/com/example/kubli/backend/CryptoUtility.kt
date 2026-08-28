@@ -53,7 +53,7 @@ object CryptoUtility {
     private fun deriveKey(passphrase: String, salt: ByteArray) = 
         SecretKeySpec(
             SecretKeyFactory.getInstance(KEY_ALGORITHM)
-                .generateSecret(PBEKeySpec(passphrase.toCharArray(), salt, 100000, 256))
+                .generateSecret(PBEKeySpec(passphrase.toCharArray(), salt, 300000, 256))
                 .encoded,
             "AES"
         )

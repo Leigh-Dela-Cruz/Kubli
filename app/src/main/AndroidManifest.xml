@@ -8,6 +8,9 @@
         android:label="@string/app_name"
         android:theme="@style/Base.Theme.Kubli">
         <activity
+            android:name=".AdminDashboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".UpdatePasswordActivity"
             android:exported="false" />
         <activity
