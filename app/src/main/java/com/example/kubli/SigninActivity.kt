@@ -30,7 +30,7 @@ class SigninActivity : AppCompatActivity() {
         val textForgot = findViewById<TextView>(R.id.textForgotPassword)
         textForgot.paintFlags = textForgot.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         textForgot.setOnClickListener {
-            val intent = Intent(this, UpdatePasswordActivity::class.java)
+            val intent = Intent(this, ForgotPasswordActivity::class.java)
             startActivity(intent)
         }
 
