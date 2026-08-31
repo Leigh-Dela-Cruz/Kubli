@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -90,18 +91,20 @@
                         android:gravity="bottom">
 
                         <TextView
+                            android:id="@+id/tvTotalRegisteredUsers"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="60"
+                            android:text="0"
                             android:textSize="32sp"
                             android:textStyle="bold"
                             android:textColor="@color/kubli_btn_dark" />
 
                         <TextView
+                            android:id="@+id/tvUserGrowth"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:text="↑ 5.2%"
+                            android:text=""
                             android:textSize="14sp"
                             android:textColor="@color/kubli_success_green" />
                     </LinearLayout>
@@ -141,10 +144,11 @@
                             android:textColor="@color/kubli_gray_shadow" />
 
                         <TextView
+                            android:id="@+id/tvActiveUsers"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="1"
+                            android:text="0"
                             android:textSize="32sp"
                             android:textStyle="bold"
                             android:textColor="@color/kubli_text_main" />
@@ -165,10 +169,11 @@
                             android:textColor="@color/kubli_gray_shadow" />
 
                         <TextView
+                            android:id="@+id/tvNewSignups"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="12"
+                            android:text="0"
                             android:textSize="32sp"
                             android:textStyle="bold"
                             android:textColor="@color/kubli_text_main" />
@@ -293,12 +298,14 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:layout_marginBottom="16dp">
+
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="12dp"
                             android:layout_height="12dp"
                             app:cardBackgroundColor="@color/kubli_purple"
                             app:cardCornerRadius="2dp"
                             app:strokeWidth="0dp"/>
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -307,6 +314,7 @@
                             android:text="Journalists"
                             android:textColor="@color/kubli_text_main"
                             android:textSize="14sp"/>
+
                         <TextView
                             android:id="@+id/tvJournalistPerc"
                             android:layout_width="wrap_content"
@@ -323,6 +331,7 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:layout_marginBottom="16dp">
+
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="12dp"
                             android:layout_height="12dp"
@@ -338,6 +347,7 @@
                             android:text="Investigators"
                             android:textColor="@color/kubli_text_main"
                             android:textSize="14sp"/>
+
                         <TextView
                             android:id="@+id/tvInvestigatorPerc"
                             android:layout_width="wrap_content"
@@ -354,12 +364,14 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:layout_marginBottom="16dp">
+
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="12dp"
                             android:layout_height="12dp"
                             app:cardBackgroundColor="#C77DFF"
                             app:cardCornerRadius="2dp"
                             app:strokeWidth="0dp"/>
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -368,6 +380,7 @@
                             android:text="Informants"
                             android:textColor="@color/kubli_text_main"
                             android:textSize="14sp"/>
+
                         <TextView
                             android:id="@+id/tvInformantPerc"
                             android:layout_width="wrap_content"
@@ -383,6 +396,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical">
+
                         <com.google.android.material.card.MaterialCardView
                             android:layout_width="12dp"
                             android:layout_height="12dp"
@@ -408,6 +422,7 @@
                             android:textColor="@color/kubli_text_main"
                             android:textSize="14sp"/>
                     </LinearLayout>
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

@@ -17,6 +17,7 @@ import com.google.android.material.textfield.TextInputLayout
 import java.security.MessageDigest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FieldValue
 
 class SignupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -186,8 +187,11 @@ class SignupActivity : AppCompatActivity() {
                         "email" to email,
                         "profession" to selectedProfession,
                         "specialization" to selectedSpecialization,
-                        "role" to "user"
+                        "role" to "user",
+                        "createdAt" to FieldValue.serverTimestamp(),
+                        "lastActive" to FieldValue.serverTimestamp()
                     )
+
 
                     firestore.collection("users")
                         .document(uid)
