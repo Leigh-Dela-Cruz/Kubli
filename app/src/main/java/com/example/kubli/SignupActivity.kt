@@ -16,6 +16,7 @@ import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FieldValue
 
 class SignupActivity : AppCompatActivity() {
 
@@ -502,21 +503,16 @@ class SignupActivity : AppCompatActivity() {
                     // FIRESTORE PROFILE
                     // -------------------------------------------------
 
-                    val userData =
-                        hashMapOf(
+                    val userData = hashMapOf(
+                        "fullName" to name,
+                        "email" to email,
+                        "profession" to selectedProfession,
+                        "specialization" to selectedSpecialization,
+                        "role" to "user",
+                        "createdAt" to FieldValue.serverTimestamp(),
+                         "lastActive" to FieldValue.serverTimestamp()
+                    )
 
-                            "fullName" to name,
-
-                            "email" to email,
-
-                            "profession" to
-                                    selectedProfession,
-
-                            "specialization" to
-                                    selectedSpecialization,
-
-                            "role" to "user"
-                        )
 
 
                     // -------------------------------------------------

@@ -7,13 +7,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.progressindicator.CircularProgressIndicator
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
 import java.util.Date
 
 class AdminDashboardActivity : AppCompatActivity() {
-    
+
     private val db = FirebaseFirestore.getInstance()
 
     // Dashboard statistics
@@ -42,13 +41,12 @@ class AdminDashboardActivity : AppCompatActivity() {
         initializeViews()
         setupBottomNavigation()
 
-        // Load real Firebase dashboard data
         loadDashboardData()
     }
 
     private fun initializeViews() {
 
-        // Main statistics
+        // Main dashboard statistics
         tvTotalRegisteredUsers =
             findViewById(R.id.tvTotalRegisteredUsers)
 
@@ -61,7 +59,7 @@ class AdminDashboardActivity : AppCompatActivity() {
         tvNewSignups =
             findViewById(R.id.tvNewSignups)
 
-        // Profession chart
+        // Profession breakdown
         tvTotalProfessionUsers =
             findViewById(R.id.tvTotalProfessionUsers)
 
@@ -77,7 +75,7 @@ class AdminDashboardActivity : AppCompatActivity() {
         tvOtherPerc =
             findViewById(R.id.tvOtherPerc)
 
-        // Progress indicators
+        // Circular progress indicators
         progressJournalists =
             findViewById(R.id.progressJournalists)
 
@@ -95,14 +93,19 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         Log.d(
             "ADMIN_DASHBOARD",
-            "Loading dashboard data from Firestore..."
+            "Loading users from Firestore..."
         )
 
         db.collection("users")
             .get()
             .addOnSuccessListener { result ->
 
-                // TOTAL REGISTERED USERS
+                /*
+                 * TOTAL REGISTERED USERS
+                 *
+                 * Every document inside users represents
+                 * one registered user.
+                 */
                 val totalUsers = result.size()
 
                 var activeUsers = 0
@@ -114,32 +117,47 @@ class AdminDashboardActivity : AppCompatActivity() {
                 var other = 0
 
                 /*
-                 * Calculate dates for dashboard statistics
+                 * Date calculations
                  */
 
-                val calendar = Calendar.getInstance()
+                val now = Date()
 
-                // NEW SIGNUPS:
-                // Accounts created within the last 7 days
-                calendar.add(Calendar.DAY_OF_YEAR, -7)
-                val sevenDaysAgo = calendar.time
+                // New signup period = last 7 days
+                val sevenDaysAgoCalendar =
+                    Calendar.getInstance()
 
-                // Reset calendar
-                calendar.time = Date()
+                sevenDaysAgoCalendar.time = now
+                sevenDaysAgoCalendar.add(
+                    Calendar.DAY_OF_YEAR,
+                    -7
+                )
 
-                // ACTIVE USERS:
-                // Users active within the last 30 days
-                calendar.add(Calendar.DAY_OF_YEAR, -30)
-                val thirtyDaysAgo = calendar.time
+                val sevenDaysAgo =
+                    sevenDaysAgoCalendar.time
+
+                // Active user period = last 30 days
+                val thirtyDaysAgoCalendar =
+                    Calendar.getInstance()
+
+                thirtyDaysAgoCalendar.time = now
+                thirtyDaysAgoCalendar.add(
+                    Calendar.DAY_OF_YEAR,
+                    -30
+                )
+
+                val thirtyDaysAgo =
+                    thirtyDaysAgoCalendar.time
 
                 /*
-                 * Loop through every user in Firestore
+                 * Process every Firestore user
                  */
 
                 for (document in result) {
 
                     /*
+                     * -----------------------------------------
                      * PROFESSION
+                     * -----------------------------------------
                      */
 
                     val profession =
@@ -162,13 +180,21 @@ class AdminDashboardActivity : AppCompatActivity() {
                             informants++
                         }
 
+                        "other" -> {
+                            other++
+                        }
+
                         else -> {
                             other++
                         }
                     }
 
                     /*
+                     * -----------------------------------------
                      * NEW SIGNUPS
+                     * -----------------------------------------
+                     *
+                     * Reads the createdAt timestamp from Firestore.
                      */
 
                     val createdAt =
@@ -179,13 +205,20 @@ class AdminDashboardActivity : AppCompatActivity() {
                         val createdDate =
                             createdAt.toDate()
 
-                        if (createdDate.after(sevenDaysAgo)) {
+                        if (
+                            createdDate.after(sevenDaysAgo) &&
+                            createdDate.before(now)
+                        ) {
                             newSignups++
                         }
                     }
 
                     /*
+                     * -----------------------------------------
                      * ACTIVE USERS
+                     * -----------------------------------------
+                     *
+                     * Reads lastActive from Firestore.
                      */
 
                     val lastActive =
@@ -196,14 +229,19 @@ class AdminDashboardActivity : AppCompatActivity() {
                         val lastActiveDate =
                             lastActive.toDate()
 
-                        if (lastActiveDate.after(thirtyDaysAgo)) {
+                        if (
+                            lastActiveDate.after(thirtyDaysAgo) &&
+                            lastActiveDate.before(now)
+                        ) {
                             activeUsers++
                         }
                     }
                 }
 
                 /*
-                 * Update main dashboard statistics
+                 * -----------------------------------------
+                 * UPDATE DASHBOARD
+                 * -----------------------------------------
                  */
 
                 tvTotalRegisteredUsers.text =
@@ -216,12 +254,12 @@ class AdminDashboardActivity : AppCompatActivity() {
                     newSignups.toString()
 
                 /*
-                 * User growth percentage
+                 * The percentage beside Total Registered Users
+                 * was previously hardcoded (5.2%).
                  *
-                 * Currently left empty because calculating real
-                 * percentage growth requires comparing two periods.
+                 * We remove it because there is currently no
+                 * previous-period data to calculate real growth.
                  */
-
                 tvUserGrowth.text = ""
 
                 /*
@@ -236,21 +274,24 @@ class AdminDashboardActivity : AppCompatActivity() {
                 )
 
                 /*
-                 * Log results for debugging
+                 * Log everything to Logcat
                  */
 
                 Log.d(
                     "ADMIN_DASHBOARD",
                     """
-                Dashboard Updated
-                -----------------
+                ================================
+                FIRESTORE DASHBOARD DATA
+                ================================
                 Total Users: $totalUsers
                 Active Users: $activeUsers
                 New Signups: $newSignups
+                
                 Journalists: $journalists
-                Investigators: $investigators
-                Informants: $informants
+                Students: $investigators
+                Teachers: $informants
                 Other: $other
+                ================================
                 """.trimIndent()
                 )
             }
@@ -259,7 +300,7 @@ class AdminDashboardActivity : AppCompatActivity() {
 
                 Log.e(
                     "ADMIN_DASHBOARD",
-                    "Failed to load dashboard data",
+                    "Firestore query failed",
                     exception
                 )
 
@@ -284,10 +325,15 @@ class AdminDashboardActivity : AppCompatActivity() {
                     informants +
                     other
 
+        /*
+         * Display total
+         */
         tvTotalProfessionUsers.text =
             totalUsers.toString()
 
-        // Prevent division by zero
+        /*
+         * No users
+         */
         if (totalUsers == 0) {
 
             tvJournalistPerc.text = "0%"
@@ -295,64 +341,85 @@ class AdminDashboardActivity : AppCompatActivity() {
             tvInformantPerc.text = "0%"
             tvOtherPerc.text = "0%"
 
-            progressJournalists.setProgressCompat(0, false)
-            progressInvestigators.setProgressCompat(0, false)
-            progressInformants.setProgressCompat(0, false)
-            progressOther.setProgressCompat(0, false)
+            progressJournalists.setProgressCompat(
+                0,
+                false
+            )
+
+            progressInvestigators.setProgressCompat(
+                0,
+                false
+            )
+
+            progressInformants.setProgressCompat(
+                0,
+                false
+            )
+
+            progressOther.setProgressCompat(
+                0,
+                false
+            )
 
             return
         }
 
         /*
-         * Calculate percentages
+         * Calculate profession percentages
          */
 
-        val percJournalists =
-            (journalists.toFloat() / totalUsers * 100).toInt()
+        val journalistPercentage =
+            (journalists.toFloat() /
+                    totalUsers * 100).toInt()
 
-        val percInvestigators =
-            (investigators.toFloat() / totalUsers * 100).toInt()
+        val investigatorPercentage =
+            (investigators.toFloat() /
+                    totalUsers * 100).toInt()
 
-        val percInformants =
-            (informants.toFloat() / totalUsers * 100).toInt()
+        val informantPercentage =
+            (informants.toFloat() /
+                    totalUsers * 100).toInt()
 
-        val percOther =
+        /*
+         * Calculate remainder so the total is exactly 100%.
+         */
+        val otherPercentage =
             100 -
-                    percJournalists -
-                    percInvestigators -
-                    percInformants
+                    journalistPercentage -
+                    investigatorPercentage -
+                    informantPercentage
 
         /*
          * Cumulative progress for layered circular chart
          */
 
-        val progressJournalist =
-            percJournalists
+        val journalistProgress =
+            journalistPercentage
 
-        val progressInvestigator =
-            progressJournalist +
-                    percInvestigators
+        val investigatorProgress =
+            journalistProgress +
+                    investigatorPercentage
 
-        val progressInformant =
-            progressInvestigator +
-                    percInformants
+        val informantProgress =
+            investigatorProgress +
+                    informantPercentage
 
         /*
-         * Update chart
+         * Update circular indicators
          */
 
         progressJournalists.setProgressCompat(
-            progressJournalist,
+            journalistProgress,
             true
         )
 
         progressInvestigators.setProgressCompat(
-            progressInvestigator,
+            investigatorProgress,
             true
         )
 
         progressInformants.setProgressCompat(
-            progressInformant,
+            informantProgress,
             true
         )
 
@@ -362,20 +429,20 @@ class AdminDashboardActivity : AppCompatActivity() {
         )
 
         /*
-         * Update percentage labels
+         * Update legend percentages
          */
 
         tvJournalistPerc.text =
-            "$percJournalists%"
+            "$journalistPercentage%"
 
         tvInvestigatorPerc.text =
-            "$percInvestigators%"
+            "$investigatorPercentage%"
 
         tvInformantPerc.text =
-            "$percInformants%"
+            "$informantPercentage%"
 
         tvOtherPerc.text =
-            "$percOther%"
+            "$otherPercentage%"
     }
 
     private fun setupBottomNavigation() {
